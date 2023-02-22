@@ -14,7 +14,11 @@ class FormController extends Controller
      */
     public function index()
     {
-        return view('users.form.index');
+        $formularios = Form::all();
+
+        return view('users.form.index', [
+            'formularios' => $formularios
+        ]);
     }
 
     /**
@@ -48,7 +52,7 @@ class FormController extends Controller
      */
     public function edit(Form $form)
     {
-        return view('users.form.create', [
+        return view('users.form.edit', [
             'form' => $form
         ]);
     }
@@ -58,7 +62,9 @@ class FormController extends Controller
      */
     public function update(UpdateFormRequest $request, Form $form)
     {
-        //
+        return response()->json([
+            'form' => $form
+        ]);
     }
 
     /**

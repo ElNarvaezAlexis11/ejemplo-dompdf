@@ -12,6 +12,14 @@
                     @csrf
                     <x-button>Agregra formulario</x-button>
                 </form>
+
+                <ul>
+                    @foreach($formularios as $form)
+                    <li>
+                        <a href="{{route('forms.edit',$form->id)}}">{{$form->id}}</a>
+                    </li>
+                    @endforeach
+                </ul>
             </div>
         </div>
     </div>

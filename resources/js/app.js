@@ -2,7 +2,10 @@ import './bootstrap';
 
 import Alpine from 'alpinejs';
 import focus from '@alpinejs/focus';
-import './forms/editor';
+import './formularios/editor';
+import './formularios/recorder';
+
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 window.Alpine = Alpine;
 

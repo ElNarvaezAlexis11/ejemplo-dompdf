@@ -1,6 +1,5 @@
 import { TYPE_INPUTS } from './types';
 import { sorting } from './sortable';
-import 'bootstrap-icons/font/bootstrap-icons.css';
 
 // Espera a que se cargue AlpineJS y luego inicializa el componente.
 document.addEventListener('alpine:init', () => {

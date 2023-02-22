@@ -29,7 +29,5 @@
         @stack('modals')
 
         @livewireScripts
-        
-        @stack('start-scripts')
     </body>
 </html>
