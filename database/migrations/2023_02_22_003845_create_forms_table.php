@@ -8,12 +8,21 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
+     * 
      */
     public function up(): void
     {
         Schema::create('forms', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id');
+            $table->string('titulo_corto')->nullable(true);
+            $table->string('titulo_largo')->nullable(true);
+            $table->text('descripcion')->nullable(true);
+            $table->boolean('status')->nullable(true);
+            $table->json('elementos')->nullable(true);
             $table->timestamps();
+            $table->softDeletes();
+
+            $table->primary('id');
         });
     }
 

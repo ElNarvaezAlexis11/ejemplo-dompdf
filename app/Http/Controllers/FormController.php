@@ -14,7 +14,7 @@ class FormController extends Controller
      */
     public function index()
     {
-        //
+        return view('users.form.index');
     }
 
     /**
@@ -22,7 +22,7 @@ class FormController extends Controller
      */
     public function create()
     {
-        //
+        return view('users.form.create');
     }
 
     /**
@@ -30,7 +30,10 @@ class FormController extends Controller
      */
     public function store(StoreFormRequest $request)
     {
-        //
+        $editor = new Form();
+        $editor->save();
+
+        return redirect()->route('forms.edit', $editor->id);
     }
 
     /**
@@ -38,7 +41,6 @@ class FormController extends Controller
      */
     public function show(Form $form)
     {
-        //
     }
 
     /**
@@ -46,7 +48,9 @@ class FormController extends Controller
      */
     public function edit(Form $form)
     {
-        //
+        return view('users.form.create', [
+            'form' => $form
+        ]);
     }
 
     /**
