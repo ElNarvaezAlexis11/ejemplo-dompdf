@@ -6,6 +6,7 @@ use App\Models\Form;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreFormRequest;
 use App\Http\Requests\UpdateFormRequest;
+use Illuminate\Http\Request;
 
 class FormController extends Controller
 {
@@ -60,12 +61,65 @@ class FormController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateFormRequest $request, Form $form)
+    public function update(Request $request, Form $form)
     {
+        $validate = validator($request->all(), [
+            'titulo_corto' => 'required',
+            'titulo_largo' => 'required',
+            'descripcion' => 'required',
+            'elementos' => 'required|json',
+            'elementos.*.title' => 'required|max:100',
+            'elementos.*.required' => 'boolean',
+            'elementos.*.position' => 'required|min:0',
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'errors' => json_encode($validate->errors())
+            ]);
+        }
         return response()->json([
-            'form' => $form
+            'data' => $request->all()
         ]);
     }
+
+    /**
+     * Validaciones para guardar los elementos del formulario 
+     */
+    public function getValidate(array $element, int $position): array
+    {
+        $array = [];
+        switch ($element['type']) {
+            case 'text':
+                return $array;
+            case 'paragraphs':
+                
+
+                return $array;
+            case 'radio':
+                # code...
+                return $array;
+            case 'grid-verify':
+                # code...
+                return $array;
+            case 'grid-multiply':
+                # code...
+                return $array;
+            case 'date':
+                # code...
+                return $array;
+            case 'hour':
+                # code...
+                return $array;
+
+            default:
+                # code...
+                return $array;
+        }
+
+        return [];
+    }
+
 
     /**
      * Remove the specified resource from storage.

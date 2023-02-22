@@ -3,6 +3,7 @@ import { sorting } from './sortable';
 
 // Espera a que se cargue AlpineJS y luego inicializa el componente.
 document.addEventListener('alpine:init', () => {
+
     Alpine.data('editor', ($el) => ({
         // Array de elementos que se mostrarán en el formulario.
         elements: [

@@ -76,27 +76,27 @@
 
                     <!-- Nombre corto -->
                     <div class="col-span-2">
-                        <input type="text" x-model="data.titulo_corto.titulo" placeholder="Nombre corto" class="w-full bg-white text-xl rounded p-2 border focus:outline-none focus:border-blue-500 " />
-                        <template x-if="data.titulo_corto.error">
-                            <p x-text="data.titulo_corto.error" class="w-full text-red-400 px-2"></p>
+                        <input type="text" x-model="data.titulo_corto" placeholder="Nombre corto" class="w-full bg-white text-xl rounded p-2 border focus:outline-none focus:border-blue-500 " />
+                        <template x-if="data.errors?.titulo_corto">
+                            <p x-text="data.errors.titulo_corto" class="w-full text-red-400 px-2"></p>
                         </template>
                     </div>
                     <!-- Nombre corto -->
 
                     <!-- Nombre largo -->
                     <div class="col-span-2">
-                        <input type="text" x-model="data.titulo_largo.titulo" placeholder="Nombre largo" class="w-full bg-white rounded p-2 border focus:outline-none focus:border-blue-500" />
-                        <template x-if="data.titulo_largo.error">
-                            <p x-text="data.titulo_largo.error" class="w-full text-red-400 px-2"></p>
+                        <input type="text" x-model="data.titulo_largo" placeholder="Nombre largo" class="w-full bg-white rounded p-2 border focus:outline-none focus:border-blue-500" />
+                        <template x-if="data.errors?.titulo_largo">
+                            <p x-text="data.errors.titulo_largo" class="w-full text-red-400 px-2"></p>
                         </template>
                     </div>
                     <!-- Nombre largo -->
 
                     <!-- Descripcion -->
                     <div class="col-span-2">
-                        <textarea x-model="data.descripcion.titulo" placeholder="Descripción" class="w-full bg-white rounded p-2 border focus:outline-none focus:border-blue-500"></textarea>
-                        <template x-if="data.descripcion.error">
-                            <p x-text="data.descripcion.error" class="w-full text-red-400 px-2"></p>
+                        <textarea x-model="data.descripcion" placeholder="Descripción" class="w-full bg-white rounded p-2 border focus:outline-none focus:border-blue-500"></textarea>
+                        <template x-if="data.errors?.descripcion">
+                            <p x-text="data.errors.descripcion" class="w-full text-red-400 px-2"></p>
                         </template>
                     </div>
                     <!-- Descripcion -->
@@ -118,9 +118,9 @@
                     </section>
 
                     <!-- seccion de errores-->
-                    <template x-if="element.errors">
+                    <template x-if="data.errors?.elementos">
                         <section class="grid-cols-2">
-                            <p x-text="element.errors" class="w-full text-red-400 px-2"></p>
+                            <p x-text="data.errors?.elementos+`.${index}`" class="w-full text-red-400 px-2"></p>
                         </section>
                     </template>
                     <!-- seccion de errores-->

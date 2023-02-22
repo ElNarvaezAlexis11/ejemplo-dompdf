@@ -1,21 +1,14 @@
 document.addEventListener('alpine:init', () => {
+
     Alpine.data('recorder', ($el) => ({
         saved: false,
         data: {
-            titulo_corto: {
-                titulo: '',
-                error: null,
-            },
-            titulo_largo: {
-                titulo: '',
-                error: null,
-            },
-            descripcion: {
-                titulo: '',
-                error: null,
-            },
+            errors: null,
+            titulo_corto: '',
+            titulo_largo: '',
+            descripcion: '',
             status: '',
-            elementos: null
+            elementos: null,
         },
         submit: function (event, url) {
             let laravelToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -23,7 +16,10 @@ document.addEventListener('alpine:init', () => {
             window.axios
                 .put(url, this.data, { headers: { 'X-CSRF-TOKEN': laravelToken } })
                 .then(res => {
-                    console.log(res)
+                    if (res.data?.errors) {
+                        this.data.errors = res.data.errors;
+                        console.log(JSON.parse(res.data.errors));
+                    }
                 })
                 .catch(error => {
                     console.log(error)
