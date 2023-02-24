@@ -6,36 +6,7 @@ document.addEventListener('alpine:init', () => {
 
     Alpine.data('editor', ($el) => ({
         // Array de elementos que se mostrarán en el formulario.
-        elements: [
-            {
-                "title": "primera",
-                "type": null,
-                "values": [],
-                "required": false,
-                "validation": null,
-                "errors": null,
-                "position": 0
-            },
-            {
-                "title": "segunda",
-                "type": null,
-                "values": [],
-                "required": false,
-                "validation": null,
-                "errors": null,
-                "position": 1
-            },
-            {
-                "title": "tercera",
-                "type": null,
-                "values": [],
-                "required": false,
-                "validation": null,
-                "errors": null,
-                "position": 2
-            },
-
-        ],
+        elements:[],
         // Constante que contiene los tipos de elementos de entrada disponibles.
         TYPE_INPUTS: TYPE_INPUTS,
         init() {

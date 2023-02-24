@@ -74,8 +74,19 @@ class FormController extends Controller
         ]);
 
         if ($validate->fails()) {
+            $errorsElements = [];
+
+            foreach ($validate->errors()->get('elementos.*') as $key =>$messages) {
+                $errorsElements[] = [$key,$messages];
+            }
+
             return response()->json([
-                'errors' => json_encode($validate->errors())
+                'errors' => [
+                    'titulo_corto' => $validate->errors()->get('titulo_corto'),
+                    'titulo_largo'  =>  $validate->errors()->get('titulo_largo'),
+                    'descripcion'  => $validate->errors()->get('descripcion'),
+                    'elementos' => (count($errorsElements) > 0) ? $errorsElements : []
+                ],
             ]);
         }
         return response()->json([
@@ -93,7 +104,7 @@ class FormController extends Controller
             case 'text':
                 return $array;
             case 'paragraphs':
-                
+
 
                 return $array;
             case 'radio':
