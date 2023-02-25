@@ -1,17 +1,25 @@
 <div id="app" x-data="recorder($el)" class="w-full min-h-screen m-auto bg-gray-200">
 
-    <form id="form" x-data="recorder" @submit.prevent="submit" class="w-full">
+    <form id="form" wire:submit.prevent="submit" class="w-full">
 
-        <header class="w-full flex bg-white shadow-md px-16 py-5 sticky top-0">
+        <header class="w-full flex bg-white shadow-md px-16 py-5 sticky top-0 z-50">
             <div class="w-full flex truncate">
                 <h1 x-text="data.titulo_corto" class="font-medium flex items-center">
                 </h1>
             </div>
             <nav class="w-full flex justify-end">
                 <ul class="flex items-center gap-2">
-                    <li :class="saved ? 'block' : 'hidden' ">
-                        <a href="#" class="text-green-300 text-xs font-semibold">
-                            Guardado
+                    <li class="hidden" wire:loading.class.remove="hidden">
+                        <a href="#" class="text-yellow-500 text-xs font-semibold">
+                            Cargando
+                        </a>
+                    </li>
+                    <li wire:loading.remove x-data="{ show: false }" x-init="" x-show="show" @saved.window="() => {
+                        show = true
+                        setTimeout( ()=>{ show = false; }, 800 )
+                    }">
+                        <a href="#" class="text-green-500 text-xs font-semibold">
+                            Guardo
                         </a>
                     </li>
 
@@ -30,7 +38,7 @@
                                 <span>Seleccione el destinatario</span>
                                 <i class="bi bi-chevron-down"></i>
                             </p>
-                            <ul x-show="open" @click.outside="open = false" class="w-full absolute right-0 top-full bg-white z-50 border">
+                            <ul x-show="open" @click.outside="open = false" class="w-full absolute right-0 top-full bg-white z-40 border">
                                 <li class=" flex px-5 py-2 hover:bg-slate-100">
                                     Alumnos
                                 </li>
@@ -61,8 +69,10 @@
             </nav>
         </header>
 
+        <x-validation-errors />
+
         <!-- Cuerpo principal -->
-        <main x-data="editor($el)" class="sm:max-w-full md:max-w-xl mx-auto pb-40 pt-16">
+        <main class="sm:max-w-full md:max-w-xl mx-auto pb-40 pt-16">
 
             <!-- Seccion de informacion basica del anexo--->
             <div class="bg-white mb-10 p-3 grid grid-flow-row gap-2 shadow-md">
@@ -75,27 +85,27 @@
                     <!-- Nombre corto -->
                     <div class="col-span-2">
                         <input type="text" x-model="data.titulo_corto" wire:model.lazy="form.titulo_corto" placeholder="Nombre corto" class="w-full bg-white text-xl rounded p-2 border focus:outline-none focus:border-blue-500 " />
-                        <template x-if="data.titulo_corto.error">
-                            <p x-text="data.titulo_corto.error" class="w-full text-red-400 px-2"></p>
-                        </template>
+                        @error('form.titulo_corto')
+                        <p class="text-red-600">{{$message}}</p>
+                        @enderror
                     </div>
                     <!-- Nombre corto -->
 
                     <!-- Nombre largo -->
                     <div class="col-span-2">
                         <input type="text" x-model="data.titulo_largo" wire:model.lazy="form.titulo_largo" placeholder="Nombre largo" class="w-full bg-white rounded p-2 border focus:outline-none focus:border-blue-500" />
-                        <template x-if="data.titulo_largo.error">
-                            <p x-text="data.titulo_largo.error" class="w-full text-red-400 px-2"></p>
-                        </template>
+                        @error('form.titulo_largo')
+                        <p class="text-red-600">{{$message}}</p>
+                        @enderror
                     </div>
                     <!-- Nombre largo -->
 
                     <!-- Descripcion -->
                     <div class="col-span-2">
                         <textarea x-model="data.descripcion" wire:model.lazy="form.descripcion" placeholder="Descripción" class="w-full bg-white rounded p-2 border focus:outline-none focus:border-blue-500"></textarea>
-                        <template x-if="data.descripcion.error">
-                            <p x-text="data.descripcion.error" class="w-full text-red-400 px-2"></p>
-                        </template>
+                        @error('form.descripcion')
+                        <p class="text-red-600">{{$message}}</p>
+                        @enderror
                     </div>
                     <!-- Descripcion -->
 
@@ -114,21 +124,33 @@
                 </section>
 
                 <!-- seccion de errores-->
+                @if($errors->has('form.elementos.'.$index.'.*'))
+                <ul>
+                    @error('form.elementos.'.$index.'.title')
+                    <li class="text-red-600">{{$message}}</li>
+                    @enderror
 
+                    @error('form.elementos.'.$index.'.type')
+                    <li class="text-red-600">{{$message}}</li>
+                    @enderror
+                </ul>
+                @endif
                 <!-- seccion de errores-->
 
                 <!-- Principal -->
                 <section class="grid gap-3 grid-cols-2">
-                    <input type="text" placeholder="Pregunta" wire:model.lazy="form.elementos.{{$index}}.title" class="w-full bg-white rounded p-2 border focus:outline-none focus:border-blue-500 col-span-1" />
+                    <div class="col-span-1">
+                        <input type="text" placeholder="Pregunta" wire:model.lazy="form.elementos.{{$index}}.title" class="w-full bg-white rounded p-2 border focus:outline-none focus:border-blue-500 {{ $errors->has($this->getErrorStringKey('title',$index)) ? 'border-red-600' : ''  }}" />
+                    </div>
                     <!-- Selector -->
                     <div x-data="{ open: false }" class="col-span-1 relative flex">
-                        <p @click="open = !open" class="w-full text-center flex justify-between items-center px-4 border">
+                        <p @click="open = !open" class="w-full text-center flex justify-between items-center px-4 border {{ $errors->has($this->getErrorStringKey('type',$index)) ? 'border-red-600' : '' }}">
                             <span>{{$form['elementos'][$index]['type'] ?? 'Seleccione el tipo de entrada' }}</span>
                             <i class="bi bi-chevron-down"></i>
                         </p>
 
                         <!-- Elementos de selector -->
-                        <ul x-show="open" @click.outside="open = false" class="w-full absolute left-0 top-full bg-white z-50 border">
+                        <ul x-show="open" @click.outside="open = false" class="w-full absolute left-0 top-full bg-white z-40 border">
                             @foreach($this->typeElements as $position => $type )
                             <li wire:click="setType( {{$index}}, '{{ $type['title'] }}' )" class="px-5 py-2 hover:bg-slate-100">
                                 <i class="{{$type['icon']}}"></i>
@@ -166,7 +188,7 @@
                                     <span class="text-xl">
                                         <i class="bi bi-record"></i>
                                     </span>
-                                    <input type="text" wire:model.lazy="form.elementos.{{$index}}.values.{{$number}}" placeholder="opcion" class="w-full bg-white rounded p-2 border focus:outline-none focus:border-blue-500 col-span-1">
+                                    <input type="text" wire:model.lazy="form.elementos.{{$index}}.values.{{$number}}" placeholder="opcion" class="w-full bg-white rounded p-2 border focus:outline-none focus:border-blue-500 col-span-1 {{ $errors->has($this->getErrorStringKey('values',$index, $number)) ? 'border-red-600' : '' }}">
                                     <span wire:click="removeValue( {{ $index }},{{ $number }} )" class="cursor-pointer hover:bg-red-300 hover:text-white">
                                         <i class="bi bi-x"></i>
                                     </span>
@@ -210,7 +232,7 @@
                                     </li>
                                     @endforeach
                                 </ul>
-                                <span @click="addRowToGrid(element)" class="text-sm font-medium text-blue-600 px-2 cursor-pointer">Agregar fila</span>
+                                <span wire:click="addRowToGrid({{$index}})" class="text-sm font-medium text-blue-600 px-2 cursor-pointer">Agregar fila</span>
                             </section>
                         </div>
                         @break
@@ -268,7 +290,7 @@
                                     </li>
                                     @endforeach
                                 </ul>
-                                <span @click="addColToGrid(element)" class="text-sm font-medium text-blue-600 px-2 cursor-pointer">Agregar columna</span>
+                                <span wire:click="addColToGrid({{$index}})" class="text-sm font-medium text-blue-600 px-2 cursor-pointer">Agregar columna</span>
                             </section>
                         </div>
                         @break
@@ -315,22 +337,22 @@
                         <!--Validacion de los parrafos  -->
 
                         <!--Validacion de las fechas  -->
-                        <template x-if=" element.type === TYPE_INPUTS.DATE.title && element.validation !== null">
-                            <section class="grid gap-3 grid-cols-2">
+                        @if($elemento['type'] === $this->typeElements['DATE']['title'] && $elemento['validation'] )
+                        <section class="grid gap-3 grid-cols-2">
 
-                                <select class="col-span-1" wire:model.lazy="element.validation.type">
-                                    <option value="between">Dentro del periodo escolar activo</option>
-                                    <option value="after">Despues de</option>
-                                    <option value="before">Antes de</option>
-                                </select>
-                                <div class="input-container col-span-1">
-                                    <template x-if="element.validation.type === 'after' || element.validation.type === 'before'">
-                                        <input type="date" wire:model.lazy="element.validation.value" placeholder="Fecha" class="w-full bg-white rounded p-2 border focus:outline-none focus:border-blue-500 col-span-1" />
-                                    </template>
-                                </div>
+                            <select class="col-span-1" wire:model.lazy="form.elementos.{{$index}}.validation.type">
+                                <option value="between">Dentro del periodo escolar activo</option>
+                                <option value="after">Despues de</option>
+                                <option value="before">Antes de</option>
+                            </select>
+                            <div class="input-container col-span-1">
+                                @if($elemento['validation']['type'] === 'after' || $elemento['validation']['type'] === 'before' )
+                                <input type="date" wire:model.lazy="form.elementos.{{$index}}.validation.value" placeholder="Fecha" class="w-full bg-white rounded p-2 border focus:outline-none focus:border-blue-500 col-span-1" />
+                                @endif
+                            </div>
 
-                            </section>
-                        </template>
+                        </section>
+                        @endif
                         <!--Validacion de las fechas  -->
 
                     </div>
@@ -367,7 +389,7 @@
                         <span @click="open = !open">
                             <i class="bi bi-three-dots-vertical"></i>
                         </span>
-                        <ul x-show="open" @click.outside="open = false" class="absolute right-0 top-full bg-white z-50 border">
+                        <ul x-show="open" @click.outside="open = false" class="absolute right-0 top-full bg-white z-40 border">
                             <li wire:click="setValidations( {{$index}} )" class=" flex px-5 py-2 hover:bg-slate-100">
                                 @if($form['elementos'][$index]['validation'])
                                 <i class="bi bi-check mr-2"></i>
@@ -390,7 +412,6 @@
                 <i class="bi bi-plus-circle mr-3"></i>
                 <span>Agregar elmento</span>
             </button>
-            <pre x-text="JSON.stringify(elements, null, '\t')"></pre>
         </main>
         <!-- Cuerpo principal -->
 

@@ -41,7 +41,7 @@
     .input-check:checked ~ .checkbox::after {
         @apply bg-indigo-800;
         @apply left-1/2;
-        @apply z-40;
+        @apply z-30;
     }
 
     .input-check:checked ~ .checkbox::before{
