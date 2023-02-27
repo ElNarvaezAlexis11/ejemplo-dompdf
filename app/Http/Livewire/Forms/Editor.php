@@ -25,25 +25,106 @@ class Editor extends Component
             'form.elementos.*.title' => 'required|string',
             'form.elementos.*.type' => 'required|string',
             'form.elementos.*.values' => 'array',
+            'form.elementos.*.required' => 'sometimes|boolean',
         ];
 
         $positionsChecksAndRadios =  collect($this->form['elementos'])
             ->whereIn('type', [
                 $this->typeElements['RADIO']['title'],
                 $this->typeElements['CHECK']['title'],
-            ])->map(fn ($element) => $element['position']);
+            ])->map(fn ($element) => $element['position'] - 1);
 
-        $positionsChecksAndRadios->each(
-            fn ($position) => $array = array_merge(
-                $array,
-                ["form.elementos.$position.values" => 'required|array'],
-                ["form.elementos.$position.values.*" => 'required|string'],
-            )
+        $positionsGridVerifyAndGridMultiply = collect($this->form['elementos'])
+            ->whereIn('type', [
+                $this->typeElements['GRID_VERIFY']['title'],
+                $this->typeElements['GRID_MULTIPLY']['title'],
+            ])->map(fn ($element) => $element['position'] - 1);
+
+        $positionsDates = collect($this->form['elementos'])
+            ->whereIn('type', [
+                $this->typeElements['DATE']['title']
+            ])
+            ->where('validation', '!=', null)
+            ->map(fn ($element) => $element['position'] - 1);
+
+        $positionsParagrphas = collect($this->form['elementos'])
+            ->whereIn('type', [
+                $this->typeElements['PARAGRAPHS']['title']
+            ])
+            ->where('validation', '!=', null)
+            ->map(fn ($element) => $element['position'] - 1);
+
+        $array = array_merge(
+            $array,
+            ...$this->getRulesToChecksAndRadios($positionsChecksAndRadios->all()),
+            ...$this->getRulesToGridVerifyAndGridMultiply($positionsGridVerifyAndGridMultiply->all()),
+            ...$this->getRulesToDate($positionsDates->all()),
+            ...$this->getRulesToParagrphs($positionsParagrphas->all())
         );
 
         return $array;
     }
 
+    /**
+     * Rgresa las reglas de validacion para las entradas de tipo "radio" y paras 
+     * las entradas de tipo "check".
+     * @param array $position Posicion en las que se encuentran las entradas de tipo
+     * "radio" y "check".  
+     * @return array Arreglo con las reglas de validacion.
+     */
+    private function getRulesToChecksAndRadios(array $positions = []): array
+    {
+        return array_map(fn ($position): array => [
+            "form.elementos.$position.values" => 'required|array',
+            "form.elementos.$position.values.*" => 'required|string'
+        ], $positions);
+    }
+
+    /**
+     * Rgresa las reglas de validacion para las entradas de tipo "Grid-Verify" y paras 
+     * las entradas de tipo "Grid-Multiply".
+     * @param array $position Posicion en las que se encuentran las entradas de tipo
+     * "radio" y "check".  
+     * @return array Arreglo con las reglas de validacion.
+     */
+    private function getRulesToGridVerifyAndGridMultiply(array $positions = []): array
+    {
+        return array_map(fn ($position): array => [
+            "form.elementos.$position.values" => 'required|array',
+            "form.elementos.$position.values.0" => 'required|array',
+            "form.elementos.$position.values.1" => 'required|array',
+            "form.elementos.$position.values.0.*" => 'required|string',
+            "form.elementos.$position.values.1.*" => 'required|string',
+        ], $positions);
+    }
+
+    /**
+     * Regresa las reglas de validacion para los elmentos de tipo "DATE".
+     * @param array $position Posicion en las que se encuentran las entradas de tipo "DATE".
+     * @return array Arreglo de validaciones para las entradas de tipo "DATE" 
+     */
+    private function getRulesToDate(array $positions = []): array
+    {
+        return array_map(fn ($position): array => [
+            "form.elementos.$position.validation" => 'required|array',
+            "form.elementos.$position.validation.type" => 'required|string|in:between,after,before',
+            "form.elementos.$position.validation.value" => "sometimes|nullable|required_if:form.elementos.$position.validation.type,after,before|date",
+        ], $positions);
+    }
+
+    /**
+     * Regresa las reglas de validacion para los elmentos de tipo "PARAGRAPHS".
+     * @param array $position Posicion en las que se encuentran las entradas de tipo "PARAGRAPHS".
+     * @return array Arreglo de validaciones para las entradas de tipo "PARAGRAPHS" 
+     */
+    private function getRulesToParagrphs(array $positions = []): array
+    {
+        return array_map(fn ($position): array => [
+            "form.elementos.$position.validation" => 'required|array',
+            "form.elementos.$position.validation.type" => 'required|string|in:min.max',
+            "form.elementos.$position.validation.value" => "required|numeric|min:0|max:250",
+        ], $positions);
+    }
 
     /**
      * @param Form $form
@@ -55,12 +136,13 @@ class Editor extends Component
         if (is_null($this->form['elementos'])) {
             $this->form['elementos'] = [];
         }
+        $this->form['elementos'] = json_decode($this->form['elementos'], true);
     }
 
     /**
      * Regresa el nombre de la llave que identifica a el mensaje de error producido 
      * durante la validacion.
-     * @param string Nombre de la propiedad del elemento dado "positionElement".
+     * @param string $keyName Nombre de la propiedad del elemento dado por "positionElement".
      * @param int $positionElement Posicion del elemento a recupear el error.
      * @param int $numberValue Indice del valor dentro del arreglo de "values" para el elemento dado en "positionElement".
      * @return string Nombre de la llave del error  
@@ -71,9 +153,19 @@ class Editor extends Component
         if ($numberValue < 0) {
             return "form.elementos.$positionElement.$keyName";
         }
-        return "form.elementos.$positionElement.$keyName.values.$numberValue";
+        return "form.elementos.$positionElement.$keyName.$numberValue";
     }
 
+    /**
+     * Regresa el nombre de la llave que identifica a el mensaje de error producido 
+     * durante la validacion, para los elmentos que requieran una validacion especifica.
+     * @param string $keyName Nombre de la propiedad del elemento dado por "positionElement".
+     * @param int $positionElement Posicion del elemento a recupear el error.
+     */
+    public function getErrorStringKeyToValidations(string $keyName, int $positionElement): string
+    {
+        return "form.elementos.$positionElement.validation.$keyName";
+    }
 
     /**
      * Porpiedad computada que regresa los tipos de entradas validas para el
@@ -130,10 +222,41 @@ class Editor extends Component
             'values' =>  [],
             'required' =>  false,
             'validation' =>  null,
-            'errors' =>  null,
             'position' =>  count($this->form['elementos'])
         ];
     }
+
+    /**
+     * Establece el nuevo orden de los elmentos del "formulario",
+     * esta accion es ejecutada cuando el usuario arrastra y suelta alguna de las "entradas" 
+     * en el editor.
+     * @param array $newPositions Nuevas posiciones de los elementos del "formulario".
+     * @return void 
+     * @see https://laravel-livewire.com/docs/2.x/alpine-js#interacting-with-livewire-from-alpine 
+     */
+    public function setNewOrder(array $newPositions  = []): void
+    {
+        foreach ($this->form['elementos'] as $index => $elmento) {
+            $position = intval($newPositions[$index - 1]);
+            $this->form['elementos'][$position]['position'] = $index;
+        }
+        $this->sortElement();
+    }
+
+    /**
+     * Ordena el arreglo de "elementos" dentro de "form" por la propiedad que 
+     * cada uno de los elemetos contiene.
+     * @return void 
+     */
+    public function sortElement(): void
+    {
+        usort(
+            $this->form['elementos'],
+            fn ($elemento_A, $elemento_B): int =>
+            $elemento_A['position'] - $elemento_B['position']
+        );
+    }
+
 
     /**
      * Elimina un valor de la popiedad de "elementos" del arreglo "form"
@@ -143,8 +266,11 @@ class Editor extends Component
     public function remove(int $index): void
     {
         unset($this->form['elementos'][$index]);
+        $this->sortElement();
+        foreach ($this->form['elementos'] as $index => $elmento) {
+            $this->form['elementos'][$index]['position'] = $index;
+        }
     }
-
 
     /**
      * Agrega un nuevo valor a las entradas de tipo "CHECK" y "RADIOS" en la posicion dada.
@@ -200,6 +326,29 @@ class Editor extends Component
         $this->form['elementos'][$position]['values'][0][] = 'Row name' . $numbersOfRows;
     }
 
+    /**
+     * Elimina la fila dada por la posicion de "numberRow" dentro de los "values" del 
+     * elmento dado en la posicion de "positionElement"
+     * @param int $positionElement Posicion del elemento dentro de la propiedad "elementos" del arreglo "form".
+     * @param int $numberRow Posicion de la fila a eliminar dentro de la propiedad de "Values"  
+     * @return void
+     */
+    public function removeRowToGrid(int $positionElement, int $numberRow): void
+    {
+        unset($this->form['elementos'][$positionElement]['values'][0][$numberRow]);
+    }
+
+    /**
+     * Elimina la columna dada por la posicion de "numberCol" dentro de los "values" del 
+     * elmento dado en la posicion de "positionElement"
+     * @param int $positionElement Posicion del elemento dentro de la propiedad "elementos" del arreglo "form".
+     * @param int $numberCol Posicion de la columna a eliminar dentro de la propiedad de "Values"  
+     * @return void
+     */
+    public function removeColToGrid(int $positionElement, int $numberCol): void
+    {
+        unset($this->form['elementos'][$positionElement]['values'][1][$numberCol]);
+    }
 
     /**
      * Remueve un valor dentro de las opciones de uno de los elementos dados.

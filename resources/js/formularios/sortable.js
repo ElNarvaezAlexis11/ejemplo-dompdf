@@ -6,15 +6,15 @@ export const sorting = ($editor, elements) => {
         draggable: ".container-info",
         handle: ".drag",
         chosenClass: 'scale-x-105',
-        store: {
-            set: (sortable) => {
-                let newOrder = sortable.toArray();
-                //Buscamos al elemento que posea la posicion dada del arreglo
-                for (let index = 0; index < newOrder.length; index++) {
-                    elements[parseInt(newOrder[index])].position = index;
-                }
-            }
-        }
+        // store: {
+        //     set: (sortable) => {
+        //         let newOrder = sortable.toArray();
+        //         //Buscamos al elemento que posea la posicion dada del arreglo
+        //         for (let index = 0; index < newOrder.length; index++) {
+        //             elements[parseInt(newOrder[index])].position = index;
+        //         }
+        //     }
+        // }
         // onEnd: function (evt) {
         //     let oldPosition = evt.oldIndex;
         //     let newPosition = evt.newIndex;

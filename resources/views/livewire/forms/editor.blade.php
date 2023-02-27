@@ -1,4 +1,4 @@
-<div id="app" x-data="recorder($el)" class="w-full min-h-screen m-auto bg-gray-200">
+<div id="app" x-data="{ data: @entangle('form').defer }" class="w-full min-h-screen m-auto bg-gray-200">
 
     <form id="form" wire:submit.prevent="submit" class="w-full">
 
@@ -10,7 +10,7 @@
             <nav class="w-full flex justify-end">
                 <ul class="flex items-center gap-2">
                     <li class="hidden" wire:loading.class.remove="hidden">
-                        <a href="#" class="text-yellow-500 text-xs font-semibold">
+                        <a href="javascript: void(0)" class="text-yellow-500 text-xs font-semibold">
                             Cargando
                         </a>
                     </li>
@@ -18,14 +18,14 @@
                         show = true
                         setTimeout( ()=>{ show = false; }, 800 )
                     }">
-                        <a href="#" class="text-green-500 text-xs font-semibold">
+                        <a href="javascript: void(0)" class="text-green-500 text-xs font-semibold">
                             Guardo
                         </a>
                     </li>
 
                     <!-- Visualizacion -->
                     <li>
-                        <a href="#" class=" flex items-center justify-center transition-all duration-150 p-1 text-lg text-gray-800 hover:bg-gray-300 rounded-full w-10 h-10">
+                        <a href="javascript: void(0)" class=" flex items-center justify-center transition-all duration-150 p-1 text-lg text-gray-800 hover:bg-gray-300 rounded-full w-10 h-10">
                             <i class="bi bi-eye"></i>
                         </a>
                     </li>
@@ -72,7 +72,7 @@
         <x-validation-errors />
 
         <!-- Cuerpo principal -->
-        <main class="sm:max-w-full md:max-w-xl mx-auto pb-40 pt-16">
+        <main  x-data="editor($el,$wire)" class="sm:max-w-full md:max-w-xl mx-auto pb-40 pt-16">
 
             <!-- Seccion de informacion basica del anexo--->
             <div class="bg-white mb-10 p-3 grid grid-flow-row gap-2 shadow-md">
@@ -84,7 +84,7 @@
 
                     <!-- Nombre corto -->
                     <div class="col-span-2">
-                        <input type="text" x-model="data.titulo_corto" wire:model.lazy="form.titulo_corto" placeholder="Nombre corto" class="w-full bg-white text-xl rounded p-2 border focus:outline-none focus:border-blue-500 " />
+                        <input type="text" x-model="data.titulo_corto" placeholder="Nombre corto" class="w-full bg-white text-xl rounded p-2 border focus:outline-none focus:border-blue-500 " />
                         @error('form.titulo_corto')
                         <p class="text-red-600">{{$message}}</p>
                         @enderror
@@ -93,7 +93,7 @@
 
                     <!-- Nombre largo -->
                     <div class="col-span-2">
-                        <input type="text" x-model="data.titulo_largo" wire:model.lazy="form.titulo_largo" placeholder="Nombre largo" class="w-full bg-white rounded p-2 border focus:outline-none focus:border-blue-500" />
+                        <input type="text" x-model="data.titulo_largo" placeholder="Nombre largo" class="w-full bg-white rounded p-2 border focus:outline-none focus:border-blue-500" />
                         @error('form.titulo_largo')
                         <p class="text-red-600">{{$message}}</p>
                         @enderror
@@ -102,7 +102,7 @@
 
                     <!-- Descripcion -->
                     <div class="col-span-2">
-                        <textarea x-model="data.descripcion" wire:model.lazy="form.descripcion" placeholder="Descripción" class="w-full bg-white rounded p-2 border focus:outline-none focus:border-blue-500"></textarea>
+                        <textarea x-model="data.descripcion" placeholder="Descripción" class="w-full bg-white rounded p-2 border focus:outline-none focus:border-blue-500"></textarea>
                         @error('form.descripcion')
                         <p class="text-red-600">{{$message}}</p>
                         @enderror
@@ -154,7 +154,7 @@
                             @foreach($this->typeElements as $position => $type )
                             <li wire:click="setType( {{$index}}, '{{ $type['title'] }}' )" class="px-5 py-2 hover:bg-slate-100">
                                 <i class="{{$type['icon']}}"></i>
-                                <a href="#">{{$type['title']}}</a>
+                                <a href="javascript: void(0)">{{$type['title']}}</a>
                             </li>
                             @endforeach
                         </ul>
@@ -207,7 +207,7 @@
                                     <span class="text-xl">
                                         <i class="bi bi-stop"></i>
                                     </span>
-                                    <input type="text" wire:model.lazy="form.elementos.{{$index}}.values.{{$number}}" placeholder="opcion" class="w-full bg-white rounded p-2 border focus:outline-none focus:border-blue-500 col-span-1">
+                                    <input type="text" wire:model.lazy="form.elementos.{{$index}}.values.{{$number}}" placeholder="opcion" class="w-full bg-white rounded p-2 border focus:outline-none focus:border-blue-500 col-span-1 {{ $errors->has($this->getErrorStringKey('values',$index, $number)) ? 'border-red-600' : '' }}">
                                     <span wire:click="removeValue( {{ $index }},{{ $number }} )" class="cursor-pointer hover:bg-red-300 hover:text-white">
                                         <i class="bi bi-x"></i>
                                     </span>
@@ -225,8 +225,8 @@
                                 <ul class="table-rows w-full">
                                     @foreach($elemento['values'][0] as $number => $value)
                                     <li class="flex items-center gap-3 mb-2 w-full">
-                                        <input type="text" wire:model.lazy="form.elementos.{{$index}}.values.0.{{$number}}" placeholder="Nombre de la fila" class="w-full bg-white rounded p-2 border focus:outline-none focus:border-blue-500 col-span-1">
-                                        <span @click="removeRowToGrid(element,number)" class="cursor-pointer hover:bg-red-300 hover:text-white">
+                                        <input type="text" wire:model.lazy="form.elementos.{{$index}}.values.0.{{$number}}" placeholder="Nombre de la fila" class="w-full bg-white rounded p-2 border focus:outline-none focus:border-blue-500 col-span-1 {{ $errors->has($this->getErrorStringKey('values',$index,0).'.'.$number ) ? 'border-red-600' : '' }}">
+                                        <span wire:click="removeRowToGrid({{$index}},{{$number}})" class="cursor-pointer hover:bg-red-300 hover:text-white">
                                             <i class="bi bi-x"></i>
                                         </span>
                                     </li>
@@ -244,14 +244,14 @@
                                 <ul class="table-rows w-full">
                                     @foreach($elemento['values'][0] as $number => $value)
                                     <li class="flex items-center gap-3 mb-2 w-full">
-                                        <input type="text" wire:model.lazy="form.elementos.{{$index}}.values.0.{{$number}}" placeholder="Nombre de la fila" class="w-full bg-white rounded p-2 border focus:outline-none focus:border-blue-500 col-span-1">
-                                        <span @click="removeRowToGrid(element,number)" class="cursor-pointer hover:bg-red-300 hover:text-white">
+                                        <input type="text" wire:model.lazy="form.elementos.{{$index}}.values.0.{{$number}}" placeholder="Nombre de la fila" class="w-full bg-white rounded p-2 border focus:outline-none focus:border-blue-500 col-span-1 {{ $errors->has( $this->getErrorStringKey('values',$index,0).'.'.$number ) ? 'border-red-600' : '' }}">
+                                        <span wire:click="removeRowToGrid({{$index}},{{$number}})" class="cursor-pointer hover:bg-red-300 hover:text-white">
                                             <i class="bi bi-x"></i>
                                         </span>
                                     </li>
                                     @endforeach
                                 </ul>
-                                <span @click="addRowToGrid(element)" class="text-sm font-medium text-blue-600 px-2 cursor-pointer">Agregar fila</span>
+                                <span wire:click="addRowToGrid(element)" class="text-sm font-medium text-blue-600 px-2 cursor-pointer">Agregar fila</span>
                             </section>
                         </div>
                         @break
@@ -283,8 +283,8 @@
                                         <span class="text-xl">
                                             <i class="bi bi-stop"></i>
                                         </span>
-                                        <input type="text" wire:model.lazy="form.elementos.{{$index}}.values.1.{{$number}}" placeholder="Nombre de la columna" class="w-full bg-white rounded p-2 border focus:outline-none focus:border-blue-500 col-span-1">
-                                        <span @click="removeColToGrid(element,number)" class="cursor-pointer hover:bg-red-300 hover:text-white">
+                                        <input type="text" wire:model.lazy="form.elementos.{{$index}}.values.1.{{$number}}" placeholder="Nombre de la columna" class="w-full bg-white rounded p-2 border focus:outline-none focus:border-blue-500 col-span-1 {{ $errors->has($this->getErrorStringKey('values',$index,1).'.'.$number ) ? 'border-red-600' : '' }}">
+                                        <span wire:click="removeColToGrid({{$index}},{{$number}})" class="cursor-pointer hover:bg-red-300 hover:text-white">
                                             <i class="bi bi-x"></i>
                                         </span>
                                     </li>
@@ -305,14 +305,14 @@
                                         <span class="text-xl">
                                             <i class="bi bi-record"></i>
                                         </span>
-                                        <input type="text" wire:model.lazy="form.elementos.{{$index}}.values.1.{{$number}}" placeholder="Nombre de la columna" class="w-full bg-white rounded p-2 border focus:outline-none focus:border-blue-500 col-span-1">
-                                        <span @click="removeColToGrid(element,number)" class="cursor-pointer hover:bg-red-300 hover:text-white">
+                                        <input type="text" wire:model.lazy="form.elementos.{{$index}}.values.1.{{$number}}" placeholder="Nombre de la columna" class="w-full bg-white rounded p-2 border focus:outline-none focus:border-blue-500 col-span-1 {{ $errors->has($this->getErrorStringKey('values',$index,1).'.'.$number ) ? 'border-red-600' : '' }}">
+                                        <span wire:click="removeColToGrid({{$index}},{{$number}})" class="cursor-pointer hover:bg-red-300 hover:text-white">
                                             <i class="bi bi-x"></i>
                                         </span>
                                     </li>
                                     @endforeach
                                 </ul>
-                                <span @click="addColToGrid(element)" class="text-sm font-medium text-blue-600 px-2 cursor-pointer">Agregar columna</span>
+                                <span wire:click="addColToGrid(element)" class="text-sm font-medium text-blue-600 px-2 cursor-pointer">Agregar columna</span>
                             </section>
                         </div>
                         @break
@@ -327,7 +327,7 @@
                         <!--Validacion de los parrafos  -->
                         @if($elemento['type'] === $this->typeElements['PARAGRAPHS']['title'] && $elemento['validation'] )
                         <section class="grid gap-3 grid-cols-2">
-                            <select class="col-span-1" wire:model.lazy="form.elementos.{{$index}}.validation.type">
+                            <select wire:model.lazy="form.elementos.{{$index}}.validation.type" class="col-span-1 {{ $errors->has($this->getErrorStringKeyToValidations('type',$index) ) ? 'border-red-600' : '' }}">
                                 <option value="minum">Cantidad minima de Caracteres</option>
                                 <option value="max">Cantidad maxima de Caracteres</option>
                             </select>
@@ -340,14 +340,14 @@
                         @if($elemento['type'] === $this->typeElements['DATE']['title'] && $elemento['validation'] )
                         <section class="grid gap-3 grid-cols-2">
 
-                            <select class="col-span-1" wire:model.lazy="form.elementos.{{$index}}.validation.type">
+                            <select wire:model.lazy="form.elementos.{{$index}}.validation.type" class="col-span-1 {{ $errors->has($this->getErrorStringKeyToValidations('type',$index) ) ? 'border-red-600' : '' }}">
                                 <option value="between">Dentro del periodo escolar activo</option>
                                 <option value="after">Despues de</option>
                                 <option value="before">Antes de</option>
                             </select>
                             <div class="input-container col-span-1">
                                 @if($elemento['validation']['type'] === 'after' || $elemento['validation']['type'] === 'before' )
-                                <input type="date" wire:model.lazy="form.elementos.{{$index}}.validation.value" placeholder="Fecha" class="w-full bg-white rounded p-2 border focus:outline-none focus:border-blue-500 col-span-1" />
+                                <input type="date" wire:model.lazy="form.elementos.{{$index}}.validation.value" placeholder="Fecha" class="w-full bg-white rounded p-2 border focus:outline-none focus:border-blue-500 col-span-1 {{ $errors->has($this->getErrorStringKeyToValidations('value',$index) ) ? 'border-red-600' : '' }}" />
                                 @endif
                             </div>
 
