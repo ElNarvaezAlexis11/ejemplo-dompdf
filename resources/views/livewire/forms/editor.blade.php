@@ -4,7 +4,7 @@
 
         <header class="w-full flex bg-white shadow-md px-16 py-5 sticky top-0 z-50">
             <div class="w-full flex truncate">
-                <h1 x-text="data.titulo_corto" class="font-medium flex items-center">
+                <h1 x-text="(data.titulo_corto)? data.titulo_corto : 'Titulo' " class="font-medium flex text-lg items-center" :class="(!data.titulo_corto)? 'text-gray-300' : '' ">
                 </h1>
             </div>
             <nav class="w-full flex justify-end">
@@ -14,24 +14,31 @@
                             Cargando
                         </a>
                     </li>
+                    @if($errors->any())
+                    <li>
+                        <a href="javascript: void(0)" class="text-red-500 text-xs font-semibold">
+                            Error
+                        </a>
+                    </li>
+                    @endif
                     <li wire:loading.remove x-data="{ show: false }" x-init="" x-show="show" @saved.window="() => {
                         show = true
                         setTimeout( ()=>{ show = false; }, 800 )
                     }">
                         <a href="javascript: void(0)" class="text-green-500 text-xs font-semibold">
-                            Guardo
+                            Guardado
                         </a>
                     </li>
 
-                    <!-- Visualizacion -->
+                    {{-- Visualizacion --}}
                     <li>
-                        <a href="javascript: void(0)" class=" flex items-center justify-center transition-all duration-150 p-1 text-lg text-gray-800 hover:bg-gray-300 rounded-full w-10 h-10">
+                        <a href="{{route('forms.show',$form['id']) }}" target="_blank" class=" flex items-center justify-center transition-all duration-150 p-1 text-lg text-gray-800 hover:bg-gray-300 rounded-full w-10 h-10">
                             <i class="bi bi-eye"></i>
                         </a>
                     </li>
-                    <!-- Visualizacion -->
+                    {{-- Visualizacion --}}
 
-                    <!-- Selector -->
+                    {{-- Selector --}}
                     <li>
                         <div x-data="{ open: false }" class="relative flex">
                             <p @click="open = !open" class="w-full text-center flex gap-2 justify-between items-center px-4 py-1 border">
@@ -48,74 +55,78 @@
                             </ul>
                         </div>
                     </li>
-                    <!-- Selector -->
+                    {{-- Selector --}}
 
-                    <!-- Boton guardar-->
+                    {{-- Boton guardar--}}
                     <li>
                         <button type="submit" class="flex px-3 py-1 bg-gray-100 text-gray-800 font-semibold rounded">
                             <i class="bi bi-sd-card mr-3"></i>Guardar
                         </button>
                     </li>
-                    <!-- Boton guardar-->
+                    {{-- Boton guardar--}}
 
-                    <!-- Boton publicar-->
+                    {{-- Boton publicar--}}
                     <li>
                         <button class="flex px-3 py-1 bg-blue-700 mr-1 text-white font-semibold rounded">
                             <i class="bi bi-send mr-3"></i>Publicar
                         </button>
                     </li>
-                    <!-- Boton publicar-->
+                    {{-- Boton publicar--}}
                 </ul>
             </nav>
         </header>
 
-        <x-validation-errors />
+        {{-- Cuerpo principal --}}
+        <main x-data="editor($el,$wire)" class="sm:max-w-full md:max-w-xl mx-auto pb-40 pt-16">
 
-        <!-- Cuerpo principal -->
-        <main  x-data="editor($el,$wire)" class="sm:max-w-full md:max-w-xl mx-auto pb-40 pt-16">
-
-            <!-- Seccion de informacion basica del anexo--->
+            @if ($errors->any())
             <div class="bg-white mb-10 p-3 grid grid-flow-row gap-2 shadow-md">
-                <!-- Nombres y descripcion -->
+                <x-validation-errors />
+            </div>
+            @endif
+
+            {{-- Seccion de informacion basica del anexo --}}
+            <div class="bg-white mb-10 p-3 grid grid-flow-row gap-2 shadow-md">
+                {{-- Nombres y descripcion --}}
                 <section class="grid gap-3 grid-cols-2">
                     <div class="col-span-2">
                         <h2 class="w-full text-gray-800 font-medium p-2">Nombres y descripción.</h2>
                     </div>
 
-                    <!-- Nombre corto -->
+                    {{-- Nombre corto --}}
                     <div class="col-span-2">
                         <input type="text" x-model="data.titulo_corto" placeholder="Nombre corto" class="w-full bg-white text-xl rounded p-2 border focus:outline-none focus:border-blue-500 " />
                         @error('form.titulo_corto')
                         <p class="text-red-600">{{$message}}</p>
                         @enderror
                     </div>
-                    <!-- Nombre corto -->
+                    {{-- Nombre corto --}}
 
-                    <!-- Nombre largo -->
+                    {{-- Nombre largo --}}
                     <div class="col-span-2">
                         <input type="text" x-model="data.titulo_largo" placeholder="Nombre largo" class="w-full bg-white rounded p-2 border focus:outline-none focus:border-blue-500" />
                         @error('form.titulo_largo')
                         <p class="text-red-600">{{$message}}</p>
                         @enderror
                     </div>
-                    <!-- Nombre largo -->
+                    {{-- Nombre largo --}}
 
-                    <!-- Descripcion -->
+                    {{-- Descripcion --}}
                     <div class="col-span-2">
                         <textarea x-model="data.descripcion" placeholder="Descripción" class="w-full bg-white rounded p-2 border focus:outline-none focus:border-blue-500"></textarea>
                         @error('form.descripcion')
                         <p class="text-red-600">{{$message}}</p>
                         @enderror
                     </div>
-                    <!-- Descripcion -->
+                    {{-- Descripcion --}}
 
                 </section>
-                <!-- Nombres y descripcion -->
+                {{-- Nombres y descripcion --}}
             </div>
-            <!-- Seccion de informacion basica del anexo--->
+            {{-- Seccion de informacion basica del anexo --}}
 
             @foreach($form['elementos'] as $index => $elemento)
-            <!-- Bloque -->
+            {{-- Bloque --}}
             <div :data-id="{{$index}}" class="container-info bg-white mb-10 p-3 grid grid-flow-row gap-2 shadow-md">
                 <section class="drag grid-cols-2">
                     <div class="w-full flex justify-center text-slate-300 hover:text-slate-700 cursor-move">
@@ -123,7 +134,7 @@
                     </div>
                 </section>
 
-                <!-- seccion de errores-->
+                {{-- seccion de errores--}}
                 @if($errors->has('form.elementos.'.$index.'.*'))
                 <ul>
                     @error('form.elementos.'.$index.'.title')
@@ -135,21 +146,21 @@
                     @enderror
                 </ul>
                 @endif
-                <!-- seccion de errores-->
+                {{-- seccion de errores--}}
 
-                <!-- Principal -->
+                {{-- Principal --}}
                 <section class="grid gap-3 grid-cols-2">
                     <div class="col-span-1">
                         <input type="text" placeholder="Pregunta" wire:model.lazy="form.elementos.{{$index}}.title" class="w-full bg-white rounded p-2 border focus:outline-none focus:border-blue-500 {{ $errors->has($this->getErrorStringKey('title',$index)) ? 'border-red-600' : ''  }}" />
                     </div>
-                    <!-- Selector -->
+                    {{-- Selector --}}
                     <div x-data="{ open: false }" class="col-span-1 relative flex">
                         <p @click="open = !open" class="w-full text-center flex justify-between items-center px-4 border {{ $errors->has($this->getErrorStringKey('type',$index)) ? 'border-red-600' : '' }}">
                             <span>{{$form['elementos'][$index]['type'] ?? 'Seleccione el tipo de entrada' }}</span>
                             <i class="bi bi-chevron-down"></i>
                         </p>
 
-                        <!-- Elementos de selector -->
+                        {{-- Elementos de selector --}}
                         <ul x-show="open" @click.outside="open = false" class="w-full absolute left-0 top-full bg-white z-40 border">
                             @foreach($this->typeElements as $position => $type )
                             <li wire:click="setType( {{$index}}, '{{ $type['title'] }}' )" class="px-5 py-2 hover:bg-slate-100">
@@ -158,16 +169,16 @@
                             </li>
                             @endforeach
                         </ul>
-                        <!-- Elementos de selector -->
+                        {{-- Elementos de selector --}}
 
                     </div>
-                    <!-- Selector -->
+                    {{-- Selector --}}
                 </section>
-                <!-- Principal -->
+                {{-- Principal --}}
 
-                <!-- cuerpo -->
+                {{-- cuerpo --}}
                 <section class="grid gap-2 grid-cols-2">
-                    <!-- Propiedades de los elmentos -->
+                    {{-- Propiedades de los elmentos --}}
                     <div class="col-span-1">
 
                         @switch($elemento['type'])
@@ -251,7 +262,7 @@
                                     </li>
                                     @endforeach
                                 </ul>
-                                <span wire:click="addRowToGrid(element)" class="text-sm font-medium text-blue-600 px-2 cursor-pointer">Agregar fila</span>
+                                <span wire:click="addRowToGrid({{$index}})" class="text-sm font-medium text-blue-600 px-2 cursor-pointer">Agregar fila</span>
                             </section>
                         </div>
                         @break
@@ -267,9 +278,9 @@
                         @endswitch
 
                     </div>
-                    <!-- Propiedades de los elmentos -->
+                    {{-- Propiedades de los elmentos --}}
 
-                    <!-- Propiedades de los elmentos segunda FILA -->
+                    {{-- Propiedades de los elmentos segunda FILA --}}
                     <div class="col-span-1">
                         @switch($elemento['type'])
 
@@ -312,19 +323,19 @@
                                     </li>
                                     @endforeach
                                 </ul>
-                                <span wire:click="addColToGrid(element)" class="text-sm font-medium text-blue-600 px-2 cursor-pointer">Agregar columna</span>
+                                <span wire:click="addColToGrid({{$index}})" class="text-sm font-medium text-blue-600 px-2 cursor-pointer">Agregar columna</span>
                             </section>
                         </div>
                         @break
 
                         @endswitch
                     </div>
-                    <!-- Propiedades de los elmentos  segunda FILA  -->
+                    {{-- Propiedades de los elmentos  segunda FILA  --}}
 
-                    <!-- Seccion intermedia de validaciones -->
+                    {{-- Seccion intermedia de validaciones --}}
                     <div class="col-span-2">
 
-                        <!--Validacion de los parrafos  -->
+                        {{--Validacion de los parrafos  --}}
                         @if($elemento['type'] === $this->typeElements['PARAGRAPHS']['title'] && $elemento['validation'] )
                         <section class="grid gap-3 grid-cols-2">
                             <select wire:model.lazy="form.elementos.{{$index}}.validation.type" class="col-span-1 {{ $errors->has($this->getErrorStringKeyToValidations('type',$index) ) ? 'border-red-600' : '' }}">
@@ -334,9 +345,9 @@
                             <input type="number" wire:model.lazy="form.elementos.{{$index}}.validation.value" placeholder="Número" min="1" max="250" class="w-full bg-white rounded p-2 border focus:outline-none focus:border-blue-500 col-span-1" />
                         </section>
                         @endif
-                        <!--Validacion de los parrafos  -->
+                        {{--Validacion de los parrafos  --}}
 
-                        <!--Validacion de las fechas  -->
+                        {{--Validacion de las fechas  --}}
                         @if($elemento['type'] === $this->typeElements['DATE']['title'] && $elemento['validation'] )
                         <section class="grid gap-3 grid-cols-2">
 
@@ -353,24 +364,24 @@
 
                         </section>
                         @endif
-                        <!--Validacion de las fechas  -->
+                        {{--Validacion de las fechas  --}}
 
                     </div>
-                    <!-- Seccion intermedia de validaciones -->
+                    {{-- Seccion intermedia de validaciones --}}
 
                 </section>
-                <!-- cuerpo -->
+                {{-- cuerpo --}}
 
-                <!-- pie -->
+                {{-- pie --}}
                 <section class="flex gap-3 justify-end footer">
 
-                    <!-- Icono -->
+                    {{-- Icono --}}
                     <div wire:click="remove({{$index}})" class="delete flex justify-center items-center w-9 h-9 text-lg transition-all duration-150 text-gray-500 hover:text-red-500 cursor-pointer hover:bg-red-100 px-2 rounded-full">
                         <i class="bi bi-trash"></i>
                     </div>
-                    <!-- Icono -->
+                    {{-- Icono --}}
 
-                    <!-- Boton de requerido -->
+                    {{-- Boton de requerido --}}
                     <div x-id="['required-input']" class="check flex items-center cursor-pointer">
                         <input type="checkbox" wire:model.lazy="form.elementos.{{$index}}.required" :id="$id('required-input')" class="hidden input-check">
                         <label :for="$id('required-input')" class="checkbox cursor-pointer"></label>
@@ -381,9 +392,9 @@
                             @endif
                         </label>
                     </div>
-                    <!-- Boton de requerido -->
+                    {{-- Boton de requerido --}}
 
-                    <!-- Boton de validaciones -->
+                    {{-- Boton de validaciones --}}
                     @if($this->requiredValidation($index))
                     <div x-data="{ open: false }" class="relative flex justify-center items-center">
                         <span @click="open = !open">
@@ -399,13 +410,13 @@
                         </ul>
                     </div>
                     @endif
-                    <!-- Boton de validaciones -->
+                    {{-- Boton de validaciones --}}
 
                 </section>
-                <!-- pie -->
+                {{-- pie --}}
 
             </div>
-            <!-- Bloque -->
+            {{-- Bloque --}}
             @endforeach
 
             <button wire:click="addElement" type="button" class="flex w-full justify-center items-center px-3 py-2 bg-white hover:bg-gray-100 text-gray-800 font-semibold rounded transition-all">
@@ -413,7 +424,7 @@
                 <span>Agregar elmento</span>
             </button>
         </main>
-        <!-- Cuerpo principal -->
+        {{-- Cuerpo principal --}}
 
     </form>
 </div>

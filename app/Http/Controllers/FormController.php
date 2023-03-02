@@ -46,6 +46,9 @@ class FormController extends Controller
      */
     public function show(Form $form)
     {
+        return view('users.form.show', [
+            'form' => $form
+        ]);
     }
 
     /**
@@ -57,80 +60,6 @@ class FormController extends Controller
             'form' => $form
         ]);
     }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Form $form)
-    {
-        $validate = validator($request->all(), [
-            'titulo_corto' => 'required',
-            'titulo_largo' => 'required',
-            'descripcion' => 'required',
-            'elementos' => 'required|json',
-            'elementos.*.title' => 'required|max:100',
-            'elementos.*.required' => 'boolean',
-            'elementos.*.position' => 'required|min:0',
-        ]);
-
-        if ($validate->fails()) {
-            $errorsElements = [];
-
-            foreach ($validate->errors()->get('elementos.*') as $key =>$messages) {
-                $errorsElements[] = [$key,$messages];
-            }
-
-            return response()->json([
-                'errors' => [
-                    'titulo_corto' => $validate->errors()->get('titulo_corto'),
-                    'titulo_largo'  =>  $validate->errors()->get('titulo_largo'),
-                    'descripcion'  => $validate->errors()->get('descripcion'),
-                    'elementos' => (count($errorsElements) > 0) ? $errorsElements : []
-                ],
-            ]);
-        }
-        return response()->json([
-            'data' => $request->all()
-        ]);
-    }
-
-    /**
-     * Validaciones para guardar los elementos del formulario 
-     */
-    public function getValidate(array $element, int $position): array
-    {
-        $array = [];
-        switch ($element['type']) {
-            case 'text':
-                return $array;
-            case 'paragraphs':
-
-
-                return $array;
-            case 'radio':
-                # code...
-                return $array;
-            case 'grid-verify':
-                # code...
-                return $array;
-            case 'grid-multiply':
-                # code...
-                return $array;
-            case 'date':
-                # code...
-                return $array;
-            case 'hour':
-                # code...
-                return $array;
-
-            default:
-                # code...
-                return $array;
-        }
-
-        return [];
-    }
-
 
     /**
      * Remove the specified resource from storage.

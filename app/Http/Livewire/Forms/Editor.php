@@ -32,27 +32,27 @@ class Editor extends Component
             ->whereIn('type', [
                 $this->typeElements['RADIO']['title'],
                 $this->typeElements['CHECK']['title'],
-            ])->map(fn ($element) => $element['position'] - 1);
+            ])->map(fn ($element) => $element['position']);
 
         $positionsGridVerifyAndGridMultiply = collect($this->form['elementos'])
             ->whereIn('type', [
                 $this->typeElements['GRID_VERIFY']['title'],
                 $this->typeElements['GRID_MULTIPLY']['title'],
-            ])->map(fn ($element) => $element['position'] - 1);
+            ])->map(fn ($element) => $element['position']);
 
         $positionsDates = collect($this->form['elementos'])
             ->whereIn('type', [
                 $this->typeElements['DATE']['title']
             ])
             ->where('validation', '!=', null)
-            ->map(fn ($element) => $element['position'] - 1);
+            ->map(fn ($element) => $element['position']);
 
         $positionsParagrphas = collect($this->form['elementos'])
             ->whereIn('type', [
                 $this->typeElements['PARAGRAPHS']['title']
             ])
             ->where('validation', '!=', null)
-            ->map(fn ($element) => $element['position'] - 1);
+            ->map(fn ($element) => $element['position']);
 
         $array = array_merge(
             $array,
@@ -129,6 +129,7 @@ class Editor extends Component
     /**
      * @param Form $form
      * @return void 
+     * @see https://laravel-livewire.com/docs/2.x/properties#initializing-properties
      */
     public function mount(Form $form): void
     {
@@ -237,7 +238,7 @@ class Editor extends Component
     public function setNewOrder(array $newPositions  = []): void
     {
         foreach ($this->form['elementos'] as $index => $elmento) {
-            $position = intval($newPositions[$index - 1]);
+            $position = intval($newPositions[$index]);
             $this->form['elementos'][$position]['position'] = $index;
         }
         $this->sortElement();
@@ -436,7 +437,7 @@ class Editor extends Component
      */
     public function updatedForm($value): void
     {
-        $this->dispatchBrowserEvent('saved');
+        #
     }
 
     /**
@@ -449,11 +450,13 @@ class Editor extends Component
 
         Form::find($this->form['id'])
             ->update($this->form);
+        $this->dispatchBrowserEvent('saved');
     }
 
     /**
      * Renderiza el componente
      * @return void 
+     * @see https://laravel-livewire.com/docs/2.x/rendering-components#render-method
      */
     public function render()
     {
