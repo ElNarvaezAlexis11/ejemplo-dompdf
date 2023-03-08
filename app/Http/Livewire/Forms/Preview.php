@@ -106,7 +106,6 @@ class Preview extends Component
         return $array;
     }
 
-
     /**
      * Estas reglas de validaciones las voy a poner en el modelo principal del formuiario 
      */

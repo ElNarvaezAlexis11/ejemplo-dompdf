@@ -163,7 +163,7 @@
                         {{-- Elementos de selector --}}
                         <ul x-show="open" @click.outside="open = false" class="w-full absolute left-0 top-full bg-white z-40 border">
                             @foreach($this->typeElements as $position => $type )
-                            <li wire:click="setType( {{$index}}, '{{ $type['title'] }}' )" class="px-5 py-2 hover:bg-slate-100">
+                            <li @click="open = false" wire:click="setType( {{$index}}, '{{ $type['title'] }}' )" class="px-5 py-2 hover:bg-slate-100">
                                 <i class="{{$type['icon']}}"></i>
                                 <a href="javascript: void(0)">{{$type['title']}}</a>
                             </li>
@@ -349,20 +349,7 @@
 
                         {{--Validacion de las fechas  --}}
                         @if($elemento['type'] === $this->typeElements['DATE']['title'] && $elemento['validation'] )
-                        <section class="grid gap-3 grid-cols-2">
-
-                            <select wire:model.lazy="form.elementos.{{$index}}.validation.type" class="col-span-1 {{ $errors->has($this->getErrorStringKeyToValidations('type',$index) ) ? 'border-red-600' : '' }}">
-                                <option value="between">Dentro del periodo escolar activo</option>
-                                <option value="after">Despues de</option>
-                                <option value="before">Antes de</option>
-                            </select>
-                            <div class="input-container col-span-1">
-                                @if($elemento['validation']['type'] === 'after' || $elemento['validation']['type'] === 'before' )
-                                <input type="date" wire:model.lazy="form.elementos.{{$index}}.validation.value" placeholder="Fecha" class="w-full bg-white rounded p-2 border focus:outline-none focus:border-blue-500 col-span-1 {{ $errors->has($this->getErrorStringKeyToValidations('value',$index) ) ? 'border-red-600' : '' }}" />
-                                @endif
-                            </div>
-
-                        </section>
+                        <p class="text-gray-300 p-2">Admite solo fechas que se encuentren dentro del periodo escolar activo</p>
                         @endif
                         {{--Validacion de las fechas  --}}
 
@@ -401,7 +388,7 @@
                             <i class="bi bi-three-dots-vertical"></i>
                         </span>
                         <ul x-show="open" @click.outside="open = false" class="absolute right-0 top-full bg-white z-40 border">
-                            <li wire:click="setValidations( {{$index}} )" class=" flex px-5 py-2 hover:bg-slate-100">
+                            <li @click="open = false" wire:click="setValidations( {{$index}} )" class=" flex px-5 py-2 hover:bg-slate-100">
                                 @if($form['elementos'][$index]['validation'])
                                 <i class="bi bi-check mr-2"></i>
                                 @endif

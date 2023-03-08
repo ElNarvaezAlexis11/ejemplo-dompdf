@@ -5,13 +5,27 @@ namespace App\Http\Livewire\Forms;
 use App\Models\Form;
 use Livewire\Component;
 
+/**
+ * @author Narvaez A.
+ * Componenete encargado de renderizar la vista para la edicion de los 
+ * elementos de un "Anexo Dinamico".
+ * - Ruta: `/forms/{uuid}/edit`
+ * - Vista padre: `views/users/form/edit`
+ * 
+ * Elemento perteneciente a la "Cuarta Iteración"
+ */
 class Editor extends Component
 {
     /**
-     * Informacion del formulario
-     * @var  
+     * Informacion del formulario, en forma de un arreglo.
+     * - Se utiliza un arreglo debido a que Livewire serializa/deserializa 
+     *   la carga útil de su componente con cada petición al servidor para 
+     *   compartir el estado entre el frontend y el backend.
+     * - Es por eso que se recomienda utilizar tipos de datos primitivos y
+     *   no instancias de un modelo directamente o collecciones muy grandes.
+     * @var array $form 
      */
-    public $form;
+    public array $form;
 
     protected function rules(): array
     {
@@ -66,7 +80,7 @@ class Editor extends Component
     }
 
     /**
-     * Rgresa las reglas de validacion para las entradas de tipo "radio" y paras 
+     * Regresa las reglas de validacion para las entradas de tipo "radio" y para
      * las entradas de tipo "check".
      * @param array $position Posicion en las que se encuentran las entradas de tipo
      * "radio" y "check".  
@@ -81,7 +95,7 @@ class Editor extends Component
     }
 
     /**
-     * Rgresa las reglas de validacion para las entradas de tipo "Grid-Verify" y paras 
+     * Regresa las reglas de validacion para las entradas de tipo "Grid-Verify" y para
      * las entradas de tipo "Grid-Multiply".
      * @param array $position Posicion en las que se encuentran las entradas de tipo
      * "radio" y "check".  
@@ -107,8 +121,7 @@ class Editor extends Component
     {
         return array_map(fn ($position): array => [
             "form.elementos.$position.validation" => 'required|array',
-            "form.elementos.$position.validation.type" => 'required|string|in:between,after,before',
-            "form.elementos.$position.validation.value" => "sometimes|nullable|required_if:form.elementos.$position.validation.type,after,before|date",
+            "form.elementos.$position.validation.type" => 'required|string|in:between',
         ], $positions);
     }
 
@@ -127,13 +140,18 @@ class Editor extends Component
     }
 
     /**
-     * @param Form $form
+     * - Se ejecuta solo una vez, pero antes de llamada a la funcion `render`
+     * - Sólo se ejecuta una vez en la carga inicial de la página y 
+     *   nunca se vuelve a ejecutar, ni siquiera cuando se actualiza 
+     *   el componente.
+     * @param Form $formModel Instancia del modelo de la base de datos.
      * @return void 
      * @see https://laravel-livewire.com/docs/2.x/properties#initializing-properties
+     * @see https://laravel-livewire.com/docs/2.x/lifecycle-hooks
      */
-    public function mount(Form $form): void
+    public function mount(Form $formModel): void
     {
-        $this->fill(['form' => $form->toArray()]);
+        $this->fill(['form' => $formModel->toArray()]);
         if (is_null($this->form['elementos'])) {
             $this->form['elementos'] = [];
         }
@@ -454,7 +472,8 @@ class Editor extends Component
     }
 
     /**
-     * Renderiza el componente
+     * El método render de un componente  se ejecuta en la carga inicial de la
+     * página Y en cada actualización posterior del componente.
      * @return void 
      * @see https://laravel-livewire.com/docs/2.x/rendering-components#render-method
      */
@@ -462,4 +481,5 @@ class Editor extends Component
     {
         return view('livewire.forms.editor');
     }
+
 }

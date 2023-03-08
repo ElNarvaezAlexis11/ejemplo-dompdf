@@ -9,20 +9,20 @@
 
                     {{-- Nombre corto --}}
                     <div class="col-span-2">
-                        <h1 class="w-full bg-white text-5xl border-b-2 border-gray-200 py-3">{{$form['titulo_corto']}}</h1>
+                        <h1 class="w-full bg-white text-5xl border-b-2 border-gray-200 py-3">{{$this->form['titulo_corto']}}</h1>
                     </div>
                     {{-- Nombre corto --}}
 
                     {{-- Nombre largo --}}
                     <div class="col-span-2">
-                        <h3 class="w-full bg-white text-base text-gray-500 py-3">{{$form['titulo_largo']}}</h3>
+                        <h3 class="w-full bg-white text-base text-gray-500 py-3">{{$this->form['titulo_largo']}}</h3>
                     </div>
                     {{-- Nombre largo --}}
 
                     {{-- Descripcion --}}
                     <div class="col-span-2">
                         <p class="text-gray-400">
-                            {{$form['descripcion']}}
+                            {{$this->form['descripcion']}}
                         </p>
                     </div>
                     {{-- Descripcion --}}
@@ -47,8 +47,8 @@
         </div>
         @endif
 
-        <form wire:submit.prevent="test">
-            @foreach($form['elementos'] as $index => $elemento)
+        <form wire:submit.prevent="submit">
+            @foreach($this->form['elementos'] as $index => $elemento)
             <!-- Bloque -->
             <div class="bg-white mb-10 p-3 grid grid-flow-row gap-2 {{ 
                     $errors->has('answers.'.$index.'.values') || 
@@ -241,11 +241,6 @@
             </div>
             <!-- Bloque -->
             @endforeach
-
-            <p class="flex my-10 text-gray-400">
-                Anexo en modo de vista previa, estos no envian la informacion a el servidor, pero si tienen la capacidad
-                de realizar las validaciones de los datos de cada una de las entradas.
-            </p>
 
             <button type="submit" class="bg-blue-600 text-white p-2 rounded-md">Enviar respuesta.<button>
         </form>

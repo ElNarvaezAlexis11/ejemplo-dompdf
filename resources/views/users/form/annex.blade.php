@@ -1,4 +1,4 @@
 @extends('users.form.main')
 @section('slot')
-<livewire:forms.editor :formModel="$form->id" />
+<livewire:forms.annex :annex_id="$form->id" />
 @endsection

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AnnexController;
 use App\Http\Controllers\FormController;
 use Illuminate\Support\Facades\Route;
 
@@ -28,5 +29,12 @@ Route::middleware([
     })->name('dashboard');
 
     Route::resource('forms', FormController::class);
-
+    Route::resource('annex', AnnexController::class)
+        ->except([
+            'index',
+            "create",
+            "store",
+            "edit",
+            "destroy",
+        ]);
 });
