@@ -5,13 +5,18 @@ namespace App\Http\Livewire\Forms;
 use App\Models\Form;
 use Livewire\Component;
 
+/**
+ * 
+ * Componente encargado de visualizar el formulario creado,
+ * este no guarda la informacion, solo valida los datos de entrada. 
+ */
 class Preview extends Component
 {
     /**
      * Informacion del formulario
      * @var mixed 
      */
-    public array $form;
+    public string $anexo_id;
 
     /**
      * Arreglo de valores que son rellenados en el formulario. 
@@ -25,40 +30,22 @@ class Preview extends Component
      */
     public function getTypeElementsProperty(): array
     {
-        return [
-            'TEXT' => [
-                'title' => 'text',
-                'icon' =>  'bi bi-text-left'
-            ],
-            'PARAGRAPHS' => [
-                'title' => 'paragraphs',
-                'icon' =>  'bi bi-text-paragraph'
-            ],
-            'RADIO' => [
-                'title' => 'radio',
-                'icon' =>  'bi bi-ui-radios'
-            ],
-            'CHECK' => [
-                'title' => 'check',
-                'icon' =>  'bi bi-ui-checks'
-            ],
-            'GRID_VERIFY' => [
-                'title' => 'grid-verify',
-                'icon' =>  'bi bi-ui-checks-grid'
-            ],
-            'GRID_MULTIPLY' => [
-                'title' => 'grid-multiply',
-                'icon' =>  'bi bi-ui-radios-grid'
-            ],
-            'DATE' => [
-                'title' => 'date',
-                'icon' =>  'bi bi-calendar'
-            ],
-            'HOUR' => [
-                'title' => 'hour',
-                'icon' =>  'bi bi-clock'
-            ]
-        ];
+        return Form::TYPE_ELEMENTS;
+    }
+
+    /**
+     * Funcion que regresa el formulario asociado a el `anexo_id`
+     * - Se recomienda revisar la documentacion oficial para entender, los casos
+     *	en los que se deben de utilizar las propiedades computadas `Computed Properties`.
+     *
+     * @return 
+     * @see https://laravel-livewire.com/docs/2.x/properties#computed-properties
+     */
+    public function getFormProperty(): array
+    {
+        $annex = Form::find($this->anexo_id)->toArray();
+        $annex['elementos'] = json_decode($annex['elementos'], true);
+        return $annex;
     }
 
     protected function rules(): array
@@ -95,7 +82,7 @@ class Preview extends Component
             ])->map(fn ($element) => $element['position']);
 
         $array = array_merge(
-            ...$this->getRulesToText($positionsTexts->all()),
+            ...Form::getRulesToText($positionsTexts->all()),
             ...$this->getRulesToDate($positionsDates->all()),
             ...$this->getRulesToRadio($positionsRadios->all()),
             ...$this->getRulesToCheck($positionCheck->all()),
@@ -103,25 +90,8 @@ class Preview extends Component
             ...$this->getRulesToGridVerify($positionGridVerify->all())
         );
 
+        #dd($array);
         return $array;
-    }
-
-    /**
-     * Estas reglas de validaciones las voy a poner en el modelo principal del formuiario 
-     */
-
-    public function getRulesToText(array $postions = []): array
-    {
-        return array_map(fn ($position): array => [
-            'answers.' . $position . '.values' => "required_if:form.elementos.$position.required,true|string|max:100"
-        ], $postions);
-    }
-
-    public function getRulesToDate(array $postions = []): array
-    {
-        return array_map(fn ($position): array => [
-            'answers.' . $position . '.values' => "required_if:form.elementos.$position.required,true|date"
-        ], $postions);
     }
 
     public function getRulesToRadio(array $postions = []): array
@@ -145,10 +115,16 @@ class Preview extends Component
 
     public function getRulesToGridMultiply(array $postions = []): array
     {
-        return array_map(fn ($position): array => [
-            'answers.' . $position . '.values' => "array",
-            'answers.' . $position . '.values.*' => "required_if:form.elementos.$position.required,true",
-        ], $postions);
+        return array_map(function ($position): array {
+            if ($this->form['elementos'][$position]['required']) {
+                return [
+                    'answers.' . $position . '.values.*' => "required",
+                ];
+            }
+            return [
+                'answers.' . $position . '.values' => "array",
+            ];
+        }, $postions);
     }
 
     public function getRulesToGridVerify(array $postions = []): array
@@ -191,7 +167,6 @@ class Preview extends Component
     {
         $this->resetErrorBag();
         $this->validate();
-        dd("xvcxcvxcvxcv");
     }
 
     /**
@@ -199,14 +174,9 @@ class Preview extends Component
      * @return void 
      * @see https://laravel-livewire.com/docs/2.x/properties#initializing-properties
      */
-    public function mount(Form $formModel): void
+    public function mount(string $anexo_id): void
     {
-        $this->fill(['form' => $formModel->toArray()]);
-
-        if (is_null($this->form['elementos'])) {
-            $this->form['elementos'] = [];
-        }
-        $this->form['elementos'] = json_decode($this->form['elementos'], true);
+        $this->fill(['anexo_id' => $anexo_id]);
 
         $this->fill(['answers' => array_map(fn ($element): array => [
             'label' => $element['title'],

@@ -26,6 +26,116 @@ class Annex extends Component
     public array $answers;
 
 
+    public function submit()
+    {
+        $this->validate();
+    }
+
+    protected function rules(): array
+    {
+        $positionsTexts = collect($this->form['elementos'])
+            ->whereIn('type', [
+                $this->typeElements['TEXT']['title'],
+            ])->map(fn ($element) => $element['position']);
+
+        $positionsDates = collect($this->form['elementos'])
+            ->whereIn('type', [
+                $this->typeElements['DATE']['title'],
+            ])->map(fn ($element) => $element['position']);
+
+        $positionsRadios = collect($this->form['elementos'])
+            ->whereIn('type', [
+                $this->typeElements['RADIO']['title'],
+            ])->map(fn ($element) => $element['position']);
+
+        $positionCheck = collect($this->form['elementos'])
+            ->whereIn('type', [
+                $this->typeElements['CHECK']['title'],
+            ])->map(fn ($element) => $element['position']);
+
+        $positionGridMultiply = collect($this->form['elementos'])
+            ->whereIn('type', [
+                $this->typeElements['GRID_MULTIPLY']['title'],
+            ])->map(fn ($element) => $element['position']);
+
+
+        $positionGridVerify = collect($this->form['elementos'])
+            ->whereIn('type', [
+                $this->typeElements['GRID_VERIFY']['title'],
+            ])->map(fn ($element) => $element['position']);
+
+        $array = array_merge(
+            ...$this->getRulesToText($positionsTexts->all()),
+            ...$this->getRulesToDate($positionsDates->all()),
+            ...$this->getRulesToRadio($positionsRadios->all()),
+            ...$this->getRulesToCheck($positionCheck->all()),
+            ...$this->getRulesToGridMultiply($positionGridMultiply->all()),
+            ...$this->getRulesToGridVerify($positionGridVerify->all())
+        );
+
+        return $array;
+    }
+
+    /**
+     * Estas reglas de validaciones las voy a poner en el modelo principal del formuiario 
+     */
+
+    public function getRulesToText(array $postions = []): array
+    {
+        return array_map(fn ($position): array => [
+            'answers.' . $position . '.values' => "required_if:form.elementos.$position.required,true|string|max:100"
+        ], $postions);
+    }
+
+    public function getRulesToDate(array $postions = []): array
+    {
+        return array_map(fn ($position): array => [
+            'answers.' . $position . '.values' => "required_if:form.elementos.$position.required,true|date"
+        ], $postions);
+    }
+
+    public function getRulesToRadio(array $postions = []): array
+    {
+        return array_map(fn ($position): array => [
+            'answers.' . $position . '.values' => "required_if:form.elementos.$position.required,true|string"
+        ], $postions);
+    }
+
+    public function getRulesToCheck(array $postions = []): array
+    {
+        return array_map(function ($position): array {
+            if ($this->form['elementos'][$position]['required']) {
+                return ['answers.' . $position . '.values' => "array|min:1"];
+            }
+            return [
+                'answers.' . $position . '.values' => "array",
+            ];
+        }, $postions);
+    }
+
+    public function getRulesToGridMultiply(array $postions = []): array
+    {
+        return array_map(fn ($position): array => [
+            'answers.' . $position . '.values' => "array",
+            'answers.' . $position . '.values.*' => "required_if:form.elementos.$position.required,true",
+        ], $postions);
+    }
+
+    public function getRulesToGridVerify(array $postions = []): array
+    {
+        return array_map(function ($position): array {
+            if ($this->form['elementos'][$position]['required']) {
+                return [
+                    'answers.' . $position . '.values.*' => "required|array|min:1",
+                ];
+            }
+            return [
+                'answers.' . $position . '.values' => "array",
+            ];
+        }, $postions);
+    }
+
+
     /**
      * Funcion que regresa la informacion de anexos solicitado en forma de un arreglo
      * - Se recomienda revisar la documentacion oficial para entender, los casos

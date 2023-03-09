@@ -7,6 +7,7 @@ use Livewire\Component;
 
 /**
  * @author Narvaez A.
+ * 
  * Componenete encargado de renderizar la vista para la edicion de los 
  * elementos de un "Anexo Dinamico".
  * - Ruta: `/forms/{uuid}/edit`
@@ -193,40 +194,7 @@ class Editor extends Component
      */
     public function getTypeElementsProperty(): array
     {
-        return [
-            'TEXT' => [
-                'title' => 'text',
-                'icon' =>  'bi bi-text-left'
-            ],
-            'PARAGRAPHS' => [
-                'title' => 'paragraphs',
-                'icon' =>  'bi bi-text-paragraph'
-            ],
-            'RADIO' => [
-                'title' => 'radio',
-                'icon' =>  'bi bi-ui-radios'
-            ],
-            'CHECK' => [
-                'title' => 'check',
-                'icon' =>  'bi bi-ui-checks'
-            ],
-            'GRID_VERIFY' => [
-                'title' => 'grid-verify',
-                'icon' =>  'bi bi-ui-checks-grid'
-            ],
-            'GRID_MULTIPLY' => [
-                'title' => 'grid-multiply',
-                'icon' =>  'bi bi-ui-radios-grid'
-            ],
-            'DATE' => [
-                'title' => 'date',
-                'icon' =>  'bi bi-calendar'
-            ],
-            'HOUR' => [
-                'title' => 'hour',
-                'icon' =>  'bi bi-clock'
-            ]
-        ];
+        return Form::TYPE_ELEMENTS;
     }
 
     /**
