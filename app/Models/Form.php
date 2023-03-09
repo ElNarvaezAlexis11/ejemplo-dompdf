@@ -85,12 +85,98 @@ class Form extends Model
     /**
      * Genera las reglas de validacion para los elementos de tipo "TEXT" 
      * @param array $positions Posiciones de los elementos a generar la validación.
-     * 
+     * @return array 
      */
     public static function getRulesToText(array $postions = []): array
     {
         return array_map(fn ($position): array => [
             'answers.' . $position . '.values' => "required_if:form.elementos.$position.required,true|string|max:100"
         ], $postions);
+    }
+
+    /**
+     * Genera las reglas de validación para los elemetos de tipo "DATE"
+     * @param array $positions Posiciones de los elementos a generar la validación.
+     * @return array 
+     */
+    public static function getRulesToDate(array $postions = []): array
+    {
+        return array_map(fn ($position): array => [
+            'answers.' . $position . '.values' => "required_if:form.elementos.$position.required,true|date"
+        ], $postions);
+    }
+
+    /**
+     * Genera las reglas de validación para los elemetos de tipo "RADIO"
+     * @param array $positions Posiciones de los elementos a generar la validación.
+     * @return array 
+     */
+    public static function getRulesToRadio(array $postions = []): array
+    {
+        return array_map(fn ($position): array => [
+            'answers.' . $position . '.values' => "required_if:form.elementos.$position.required,true|string"
+        ], $postions);
+    }
+
+    /**
+     * Genera las reglas de validación para los elemetos de tipo "CHECK"
+     * @param array $positions Posiciones de los elementos a generar la validación.
+     * @param array $elementos Arreglo con los Elementos del "Anexo".
+     * @return array 
+     */
+    public static function getRulesToCheck(array $postions = [], array $elementos): array
+    {
+        return array_map(function ($position) use ($elementos): array {
+            if ($elementos[$position]['required']) {
+                return ['answers.' . $position . '.values' => "array|min:1"];
+            }
+            return [
+                'answers.' . $position . '.values' => "array",
+            ];
+        }, $postions);
+    }
+
+    /**
+     * Genera las reglas de validación para los elemetos de tipo "GRID_MULTPLY" 
+     * - `GRID_MULTPLY` : Elemento de tabla, cuyas filas tiene botones de tipo "checkbox" 
+     *      por cada una de las columnas.  
+     * @param array $positions Posiciones de los elementos a generar la validación.
+     * @param array $elementos Arreglo con los Elementos del "Anexo".
+     * @return array 
+     */
+    public static function getRulesToGridMultiply(array $postions = [], array $elementos): array
+    {
+        return array_map(function ($position) use ($elementos): array {
+            if ($elementos[$position]['required']) {
+                return [
+                    'answers.' . $position . '.values.*' => "required",
+                ];
+            }
+            return [
+                'answers.' . $position . '.values' => "array",
+            ];
+        }, $postions);
+    }
+
+    /**
+     * Genera las reglas de validación para los elemetos de tipo "GRID_VERIFY" 
+     * - `GRID_VERIFY` : Elemento de tabla, cuyas filas tiene botones de tipo "checkbox" 
+     *      por cada una de las columnas.  
+     * @param array $positions Posiciones de los elementos a generar la validación.
+     * @param array $elementos Arreglo con los Elementos del "Anexo".
+     * @return array 
+     */
+    public static function getRulesToGridVerify(array $postions = [], array $elementos): array
+    {
+        return array_map(function ($position) use ($elementos): array {
+            if ($elementos[$position]['required']) {
+                return [
+                    'answers.' . $position . '.values.*' => "required|array|min:1",
+                ];
+            }
+            return [
+                'answers.' . $position . '.values' => "array",
+            ];
+        }, $postions);
     }
 }

@@ -83,69 +83,22 @@ class Preview extends Component
 
         $array = array_merge(
             ...Form::getRulesToText($positionsTexts->all()),
-            ...$this->getRulesToDate($positionsDates->all()),
-            ...$this->getRulesToRadio($positionsRadios->all()),
-            ...$this->getRulesToCheck($positionCheck->all()),
-            ...$this->getRulesToGridMultiply($positionGridMultiply->all()),
-            ...$this->getRulesToGridVerify($positionGridVerify->all())
+            ...Form::getRulesToDate($positionsDates->all()),
+            ...Form::getRulesToRadio($positionsRadios->all()),
+            ...Form::getRulesToCheck($positionCheck->all(), $this->form['elementos']),
+            ...Form::getRulesToGridMultiply($positionGridMultiply->all(), $this->form['elementos']),
+            ...Form::getRulesToGridVerify($positionGridVerify->all(), $this->form['elementos'])
         );
 
-        #dd($array);
         return $array;
-    }
-
-    public function getRulesToRadio(array $postions = []): array
-    {
-        return array_map(fn ($position): array => [
-            'answers.' . $position . '.values' => "required_if:form.elementos.$position.required,true|string"
-        ], $postions);
-    }
-
-    public function getRulesToCheck(array $postions = []): array
-    {
-        return array_map(function ($position): array {
-            if ($this->form['elementos'][$position]['required']) {
-                return ['answers.' . $position . '.values' => "array|min:1"];
-            }
-            return [
-                'answers.' . $position . '.values' => "array",
-            ];
-        }, $postions);
-    }
-
-    public function getRulesToGridMultiply(array $postions = []): array
-    {
-        return array_map(function ($position): array {
-            if ($this->form['elementos'][$position]['required']) {
-                return [
-                    'answers.' . $position . '.values.*' => "required",
-                ];
-            }
-            return [
-                'answers.' . $position . '.values' => "array",
-            ];
-        }, $postions);
-    }
-
-    public function getRulesToGridVerify(array $postions = []): array
-    {
-        return array_map(function ($position): array {
-            if ($this->form['elementos'][$position]['required']) {
-                return [
-                    'answers.' . $position . '.values.*' => "required|array|min:1",
-                ];
-            }
-            return [
-                'answers.' . $position . '.values' => "array",
-            ];
-        }, $postions);
     }
 
     /**
      * Estabalece la estructura del arreglo de valores que deben de 
      * contener cada uno de los elementos del formulario
-     * @param int $position Posicion dentro de los elementos de "form" donde encuentran las grillas 
-     * @return array Arreglo con ta estructura de LLave valor para las grllas
+     * @param int $position Posicion dentro de los elementos de "form"
+     * @return array Arreglo con la estructura de LLave valor para las grllas, 
+     * un arreglo simple para los otros elementos.
      */
     public function getStructorValues(int $position): array
     {
