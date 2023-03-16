@@ -10,7 +10,8 @@
 </head>
 
 <body>
-    @for ($index = 0; $index < 3; $index++) <div class="page-break" id="app">
+    @for ($index = 0; $index < 3; $index++) 
+    <div class="{{ ($index < 3) ? 'page-break' : '' }}" id="app">
         <header class="header">
             soy el header
         </header>

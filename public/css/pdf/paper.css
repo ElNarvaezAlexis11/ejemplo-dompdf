@@ -19,8 +19,6 @@
 */
 .page-break {
     max-height: 100vh;
-}
-.page-break:not(:last-child){
     page-break-after: always;
 }
 
