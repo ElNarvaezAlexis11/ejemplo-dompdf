@@ -15,7 +15,7 @@ class Annex extends Component
 {
     /**
      * ID del registro de la tabla "Form" solitado.
-     * @var $id  
+     * @var $annex_id  
      */
     public $annex_id;
 
@@ -25,135 +25,6 @@ class Annex extends Component
      */
     public array $answers;
 
-
-    public function submit()
-    {
-        $this->validate();
-    }
-
-    protected function rules(): array
-    {
-        $positionsTexts = collect($this->form['elementos'])
-            ->whereIn('type', [
-                $this->typeElements['TEXT']['title'],
-            ])->map(fn ($element) => $element['position']);
-
-        $positionsDates = collect($this->form['elementos'])
-            ->whereIn('type', [
-                $this->typeElements['DATE']['title'],
-            ])->map(fn ($element) => $element['position']);
-
-        $positionsRadios = collect($this->form['elementos'])
-            ->whereIn('type', [
-                $this->typeElements['RADIO']['title'],
-            ])->map(fn ($element) => $element['position']);
-
-        $positionCheck = collect($this->form['elementos'])
-            ->whereIn('type', [
-                $this->typeElements['CHECK']['title'],
-            ])->map(fn ($element) => $element['position']);
-
-        $positionGridMultiply = collect($this->form['elementos'])
-            ->whereIn('type', [
-                $this->typeElements['GRID_MULTIPLY']['title'],
-            ])->map(fn ($element) => $element['position']);
-
-
-        $positionGridVerify = collect($this->form['elementos'])
-            ->whereIn('type', [
-                $this->typeElements['GRID_VERIFY']['title'],
-            ])->map(fn ($element) => $element['position']);
-
-        $array = array_merge(
-            ...$this->getRulesToText($positionsTexts->all()),
-            ...$this->getRulesToDate($positionsDates->all()),
-            ...$this->getRulesToRadio($positionsRadios->all()),
-            ...$this->getRulesToCheck($positionCheck->all()),
-            ...$this->getRulesToGridMultiply($positionGridMultiply->all()),
-            ...$this->getRulesToGridVerify($positionGridVerify->all())
-        );
-
-        return $array;
-    }
-
-    /**
-     * Estas reglas de validaciones las voy a poner en el modelo principal del formuiario 
-     */
-
-    public function getRulesToText(array $postions = []): array
-    {
-        return array_map(fn ($position): array => [
-            'answers.' . $position . '.values' => "required_if:form.elementos.$position.required,true|string|max:100"
-        ], $postions);
-    }
-
-    public function getRulesToDate(array $postions = []): array
-    {
-        return array_map(fn ($position): array => [
-            'answers.' . $position . '.values' => "required_if:form.elementos.$position.required,true|date"
-        ], $postions);
-    }
-
-    public function getRulesToRadio(array $postions = []): array
-    {
-        return array_map(fn ($position): array => [
-            'answers.' . $position . '.values' => "required_if:form.elementos.$position.required,true|string"
-        ], $postions);
-    }
-
-    public function getRulesToCheck(array $postions = []): array
-    {
-        return array_map(function ($position): array {
-            if ($this->form['elementos'][$position]['required']) {
-                return ['answers.' . $position . '.values' => "array|min:1"];
-            }
-            return [
-                'answers.' . $position . '.values' => "array",
-            ];
-        }, $postions);
-    }
-
-    public function getRulesToGridMultiply(array $postions = []): array
-    {
-        return array_map(fn ($position): array => [
-            'answers.' . $position . '.values' => "array",
-            'answers.' . $position . '.values.*' => "required_if:form.elementos.$position.required,true",
-        ], $postions);
-    }
-
-    public function getRulesToGridVerify(array $postions = []): array
-    {
-        return array_map(function ($position): array {
-            if ($this->form['elementos'][$position]['required']) {
-                return [
-                    'answers.' . $position . '.values.*' => "required|array|min:1",
-                ];
-            }
-            return [
-                'answers.' . $position . '.values' => "array",
-            ];
-        }, $postions);
-    }
-
-
-    /**
-     * Funcion que regresa la informacion de anexos solicitado en forma de un arreglo
-     * - Se recomienda revisar la documentacion oficial para entender, los casos
-     *	en los que se deben de utilizar las propiedades computadas `Computed Properties`.
-     *
-     * @return array
-     * @see https://laravel-livewire.com/docs/2.x/properties#computed-properties
-     */
-    public function getFormProperty(): array
-    {
-        if(is_null($this->annex_id)){
-            return null;
-        }
-        $record = Form::find($this->annex_id)->toArray(); 
-        $record['elementos'] = json_decode($record['elementos'], true);
-        return $record;
-    }
-
     /**
      * Porpiedad computada que regresa los tipos de entradas validas para el
      * formulario.
@@ -161,48 +32,45 @@ class Annex extends Component
      */
     public function getTypeElementsProperty(): array
     {
-        return [
-            'TEXT' => [
-                'title' => 'text',
-                'icon' =>  'bi bi-text-left'
-            ],
-            'PARAGRAPHS' => [
-                'title' => 'paragraphs',
-                'icon' =>  'bi bi-text-paragraph'
-            ],
-            'RADIO' => [
-                'title' => 'radio',
-                'icon' =>  'bi bi-ui-radios'
-            ],
-            'CHECK' => [
-                'title' => 'check',
-                'icon' =>  'bi bi-ui-checks'
-            ],
-            'GRID_VERIFY' => [
-                'title' => 'grid-verify',
-                'icon' =>  'bi bi-ui-checks-grid'
-            ],
-            'GRID_MULTIPLY' => [
-                'title' => 'grid-multiply',
-                'icon' =>  'bi bi-ui-radios-grid'
-            ],
-            'DATE' => [
-                'title' => 'date',
-                'icon' =>  'bi bi-calendar'
-            ],
-            'HOUR' => [
-                'title' => 'hour',
-                'icon' =>  'bi bi-clock'
-            ]
-        ];
+        return Form::TYPE_ELEMENTS;
+    }
+
+    /**
+     * Funcion que regresa el formulario asociado a el `annex_id`
+     * - Se recomienda revisar la documentacion oficial para entender, los casos
+     *	en los que se deben de utilizar las propiedades computadas `Computed Properties`.
+     *
+     * @return 
+     * @see https://laravel-livewire.com/docs/2.x/properties#computed-properties
+     */
+    public function getFormProperty(): array
+    {
+        $annex = Form::find($this->annex_id)->toArray();
+        $annex['elementos'] = json_decode($annex['elementos'], true);
+        return $annex;
+    }
+
+    protected function rules(): array
+    {
+        return Form::validations($this->form['elementos']);
+    }
+
+    /**
+     * Funcion ejecutada al momento de enviar la informaicon de `anexo`
+     * @return void 
+     */
+    public function submit(): void
+    {
+        $this->validate();
     }
 
 
     /**
      * Estabalece la estructura del arreglo de valores que deben de 
      * contener cada uno de los elementos del formulario
-     * @param int $position Posicion dentro de los elementos de "form" donde encuentran las grillas 
-     * @return array Arreglo con ta estructura de LLave valor para las grllas
+     * @param int $position Posicion dentro de los elementos de "form"
+     * @return array Arreglo con la estructura de "LLave/valor" para las grllas, 
+     * un arreglo simple para los otros elementos.
      */
     public function getStructorValues(int $position): array
     {
@@ -215,23 +83,21 @@ class Annex extends Component
         return [];
     }
 
+
     /**
      * - Se ejecuta solo una vez, pero antes de llamada a la funcion `render`
      * - Sólo se ejecuta una vez en la carga inicial de la página y 
      *   nunca se vuelve a ejecutar, ni siquiera cuando se actualiza 
      *   el componente.
-     * @param string $id ID del registro de la tabla de "Form" solicitado
+     * @param string $annex_id ID del registro de la tabla de "Form" solicitado
      * @return void 
      * @see https://laravel-livewire.com/docs/2.x/properties#initializing-properties
      * @see https://laravel-livewire.com/docs/2.x/lifecycle-hooks
      */
     public function mount(string $annex_id)
     {
-        $this->fill(['id' => $annex_id]);
+        $this->fill(['annex_id' => $annex_id]);
 
-        // if (is_null($this->form->elementos)) {
-        //     $this->form->elementos = [];
-        // }
         $this->fill(['answers' => array_map(fn ($element): array => [
             'label' => $element['title'],
             'values' => [...$this->getStructorValues($element['position'])]

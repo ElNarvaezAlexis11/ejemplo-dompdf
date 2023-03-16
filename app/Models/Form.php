@@ -82,6 +82,51 @@ class Form extends Model
         ]
     ];
 
+    public static function validations(array $elementos)
+    {
+        $positionsTexts = collect($elementos)
+            ->whereIn('type', [
+                self::TYPE_ELEMENTS['TEXT']['title'],
+            ])->map(fn ($element) => $element['position']);
+
+        $positionsDates = collect($elementos)
+            ->whereIn('type', [
+                self::TYPE_ELEMENTS['DATE']['title'],
+            ])->map(fn ($element) => $element['position']);
+
+        $positionsRadios = collect($elementos)
+            ->whereIn('type', [
+                self::TYPE_ELEMENTS['RADIO']['title'],
+            ])->map(fn ($element) => $element['position']);
+
+        $positionCheck = collect($elementos)
+            ->whereIn('type', [
+                self::TYPE_ELEMENTS['CHECK']['title'],
+            ])->map(fn ($element) => $element['position']);
+
+        $positionGridMultiply = collect($elementos)
+            ->whereIn('type', [
+                self::TYPE_ELEMENTS['GRID_MULTIPLY']['title'],
+            ])->map(fn ($element) => $element['position']);
+
+
+        $positionGridVerify = collect($elementos)
+            ->whereIn('type', [
+                self::TYPE_ELEMENTS['GRID_VERIFY']['title'],
+            ])->map(fn ($element) => $element['position']);
+
+        $array = array_merge(
+            ...Form::getRulesToText($positionsTexts->all()),
+            ...Form::getRulesToDate($positionsDates->all()),
+            ...Form::getRulesToRadio($positionsRadios->all()),
+            ...Form::getRulesToCheck($positionCheck->all(), $elementos),
+            ...Form::getRulesToGridMultiply($positionGridMultiply->all(), $elementos),
+            ...Form::getRulesToGridVerify($positionGridVerify->all(), $elementos)
+        );
+
+        return $array;
+    }
+
     /**
      * Genera las reglas de validacion para los elementos de tipo "TEXT" 
      * @param array $positions Posiciones de los elementos a generar la validación.

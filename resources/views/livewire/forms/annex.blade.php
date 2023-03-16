@@ -49,7 +49,7 @@
 
         <form wire:submit.prevent="submit">
             @foreach($this->form['elementos'] as $index => $elemento)
-            <!-- Bloque -->
+            {{-- Bloque --}}
             <div class="bg-white mb-10 p-3 grid grid-flow-row gap-2 {{ 
                     $errors->has('answers.'.$index.'.values') || 
                     $errors->has('answers.'.$index.'.values.*')
@@ -152,7 +152,7 @@
                         @endif
                     </h2>
                     <div class="col-span-2 overflow-auto">
-                        <!-- Inicio de la tabla -->
+                        {{-- Inicio de la tabla --}}
                         <table class="w-full">
                             <thead>
                                 <tr>
@@ -177,7 +177,7 @@
                                 @endforeach
                             </tbody>
                         </table>
-                        <!-- Inicio de la tabla -->
+                        {{-- Inicio de la tabla --}}
                     </div>
                 </section>
                 @break
@@ -191,7 +191,7 @@
                         @endif
                     </h2>
                     <div class="col-span-2 overflow-auto">
-                        <!-- Inicio de la tabla -->
+                        {{-- Inicio de la tabla --}}
                         <table class="w-full">
                             <thead>
                                 <tr>
@@ -218,7 +218,7 @@
 
                             </tbody>
                         </table>
-                        <!-- Inicio de la tabla -->
+                        {{-- Inicio de la tabla --}}
                     </div>
                 </section>
                 @break
@@ -239,7 +239,7 @@
 
                 @endswitch
             </div>
-            <!-- Bloque -->
+            {{-- Bloque --}}
             @endforeach
 
             <button type="submit" class="bg-blue-600 text-white p-2 rounded-md">Enviar respuesta.<button>

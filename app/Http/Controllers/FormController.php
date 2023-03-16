@@ -60,12 +60,4 @@ class FormController extends Controller
             'form' => $form
         ]);
     }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Form $form)
-    {
-        //
-    }
 }

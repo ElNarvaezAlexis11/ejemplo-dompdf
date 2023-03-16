@@ -1,0 +1,48 @@
+* {
+    padding: 0;
+    box-sizing: border-box;
+    /** Varaibles CSS */
+}
+
+/**
+* Margenes de la pagina 
+*/
+@page {
+    margin-top: 0cm;
+    margin-right: 2.5cm;
+    margin-bottom: 0cm;
+    margin-left: 2.5cm;
+}
+
+/**
+* Multiples paginas 
+*/
+.page-break {
+    max-height: 100vh;
+}
+.page-break:not(:last-child){
+    page-break-after: always;
+}
+
+.header,
+.footer {
+    position: fixed;
+    width: 100%;
+    left: 0cm;
+}
+
+.header {
+    height: 2.5cm;
+    top: 0cm;
+}
+
+.footer {
+    height: 2.5cm;
+    bottom: 0cm;
+}
+
+.main {
+    outline: 1px solid red;
+    padding-top: 2.5cm;
+    padding-bottom: 2.5cm;
+}

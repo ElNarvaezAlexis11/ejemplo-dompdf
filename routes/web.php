@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AnnexController;
 use App\Http\Controllers\FormController;
+use App\Http\Controllers\PDFController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -37,4 +38,5 @@ Route::middleware([
             "edit",
             "destroy",
         ]);
+    Route::get('pdf', [PDFController::class, 'index']);
 });

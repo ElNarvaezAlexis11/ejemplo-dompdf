@@ -4,10 +4,11 @@ document.addEventListener('alpine:init', () => {
     Alpine.data('editor', ($el, $wire) => ({
         init(){
             Sortable.create($el, {
-                animation: 400,
+                animation: 300,
                 draggable: ".container-info",
                 handle: ".drag",
-                chosenClass: 'scale-x-105',
+                swap: true,
+                chosenClass: '.scale-x-110',
                 store: {
                     set: function(sortable){
                         let newOrder = sortable.toArray();

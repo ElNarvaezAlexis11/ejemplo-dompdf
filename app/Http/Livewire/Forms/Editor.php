@@ -114,7 +114,7 @@ class Editor extends Component
     }
 
     /**
-     * Regresa las reglas de validacion para los elmentos de tipo "DATE".
+     * Regresa las reglas de validacion para los elementos de tipo "DATE".
      * @param array $position Posicion en las que se encuentran las entradas de tipo "DATE".
      * @return array Arreglo de validaciones para las entradas de tipo "DATE" 
      */
@@ -127,7 +127,7 @@ class Editor extends Component
     }
 
     /**
-     * Regresa las reglas de validacion para los elmentos de tipo "PARAGRAPHS".
+     * Regresa las reglas de validacion para los elementos de tipo "PARAGRAPHS".
      * @param array $position Posicion en las que se encuentran las entradas de tipo "PARAGRAPHS".
      * @return array Arreglo de validaciones para las entradas de tipo "PARAGRAPHS" 
      */
@@ -178,7 +178,7 @@ class Editor extends Component
 
     /**
      * Regresa el nombre de la llave que identifica a el mensaje de error producido 
-     * durante la validacion, para los elmentos que requieran una validacion especifica.
+     * durante la validacion, para los elementos que requieran una validacion especifica.
      * @param string $keyName Nombre de la propiedad del elemento dado por "positionElement".
      * @param int $positionElement Posicion del elemento a recupear el error.
      */
@@ -214,7 +214,7 @@ class Editor extends Component
     }
 
     /**
-     * Establece el nuevo orden de los elmentos del "formulario",
+     * Establece el nuevo orden de los elementos del "formulario",
      * esta accion es ejecutada cuando el usuario arrastra y suelta alguna de las "entradas" 
      * en el editor.
      * @param array $newPositions Nuevas posiciones de los elementos del "formulario".
@@ -223,7 +223,7 @@ class Editor extends Component
      */
     public function setNewOrder(array $newPositions  = []): void
     {
-        foreach ($this->form['elementos'] as $index => $elmento) {
+        foreach ($this->form['elementos'] as $index => $elemento) {
             $position = intval($newPositions[$index]);
             $this->form['elementos'][$position]['position'] = $index;
         }
@@ -247,21 +247,21 @@ class Editor extends Component
 
     /**
      * Elimina un valor de la popiedad de "elementos" del arreglo "form"
-     * @param int $index Indice del elmento a eliminar.
+     * @param int $index Indice del elemento a eliminar.
      * @return void
      */
     public function remove(int $index): void
     {
         unset($this->form['elementos'][$index]);
         $this->sortElement();
-        foreach ($this->form['elementos'] as $index => $elmento) {
+        foreach ($this->form['elementos'] as $index => $elemento) {
             $this->form['elementos'][$index]['position'] = $index;
         }
     }
 
     /**
      * Agrega un nuevo valor a las entradas de tipo "CHECK" y "RADIOS" en la posicion dada.
-     * @param int $position Posicion del elmento a la que se le agregará una opcion.
+     * @param int $position Posicion del elemento a la que se le agregará una opcion.
      * @return void  
      */
     public function addValues(int $position): void
@@ -273,7 +273,7 @@ class Editor extends Component
     /**
      * Agrega una comlumna a los "valores" del elemento de la posicion dada del arreglo de "formulario"  
      *
-     * @param int $position Posicion del elmento al que le agregaremos una nueva columna 
+     * @param int $position Posicion del elemento al que le agregaremos una nueva columna 
      * en el arreglo de valores.
      * @return void
      */
@@ -294,7 +294,7 @@ class Editor extends Component
 
     /**
      * Agrega una fila a los "valores" del elemento de la posicion dada del arreglo de "formulario"
-     * @param int $position Posicion del elmento al que le agregaremos una nueva fila 
+     * @param int $position Posicion del elemento al que le agregaremos una nueva fila 
      * en el arreglo de valores.
      * @return void 
      */
@@ -315,7 +315,7 @@ class Editor extends Component
 
     /**
      * Elimina la fila dada por la posicion de "numberRow" dentro de los "values" del 
-     * elmento dado en la posicion de "positionElement"
+     * elemento dado en la posicion de "positionElement"
      * @param int $positionElement Posicion del elemento dentro de la propiedad "elementos" del arreglo "form".
      * @param int $numberRow Posicion de la fila a eliminar dentro de la propiedad de "Values"  
      * @return void
@@ -327,7 +327,7 @@ class Editor extends Component
 
     /**
      * Elimina la columna dada por la posicion de "numberCol" dentro de los "values" del 
-     * elmento dado en la posicion de "positionElement"
+     * elemento dado en la posicion de "positionElement"
      * @param int $positionElement Posicion del elemento dentro de la propiedad "elementos" del arreglo "form".
      * @param int $numberCol Posicion de la columna a eliminar dentro de la propiedad de "Values"  
      * @return void
@@ -340,9 +340,9 @@ class Editor extends Component
     /**
      * Remueve un valor dentro de las opciones de uno de los elementos dados.
      * 
-     * @param int $positionElement Posion del elmento dentro del arreglo de "form"
+     * @param int $positionElement Posion del elemento dentro del arreglo de "form"
      * @param int $positionValue Posicion dela valor a remover dentro de las propiedades 
-     * de un elmento
+     * de un elemento
      * @return void 
      * 
      */
@@ -366,7 +366,7 @@ class Editor extends Component
     }
 
     /**
-     * Estable o remueve la validacion para el elmento de la posicion dada del arreglo "form"
+     * Estable o remueve la validacion para el elemento de la posicion dada del arreglo "form"
      * 
      * @param int $position Posicion del "elemento" dentro del arreglo de "form"
      * @return void

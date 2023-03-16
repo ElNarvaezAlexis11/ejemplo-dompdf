@@ -50,47 +50,7 @@ class Preview extends Component
 
     protected function rules(): array
     {
-        $positionsTexts = collect($this->form['elementos'])
-            ->whereIn('type', [
-                $this->typeElements['TEXT']['title'],
-            ])->map(fn ($element) => $element['position']);
-
-        $positionsDates = collect($this->form['elementos'])
-            ->whereIn('type', [
-                $this->typeElements['DATE']['title'],
-            ])->map(fn ($element) => $element['position']);
-
-        $positionsRadios = collect($this->form['elementos'])
-            ->whereIn('type', [
-                $this->typeElements['RADIO']['title'],
-            ])->map(fn ($element) => $element['position']);
-
-        $positionCheck = collect($this->form['elementos'])
-            ->whereIn('type', [
-                $this->typeElements['CHECK']['title'],
-            ])->map(fn ($element) => $element['position']);
-
-        $positionGridMultiply = collect($this->form['elementos'])
-            ->whereIn('type', [
-                $this->typeElements['GRID_MULTIPLY']['title'],
-            ])->map(fn ($element) => $element['position']);
-
-
-        $positionGridVerify = collect($this->form['elementos'])
-            ->whereIn('type', [
-                $this->typeElements['GRID_VERIFY']['title'],
-            ])->map(fn ($element) => $element['position']);
-
-        $array = array_merge(
-            ...Form::getRulesToText($positionsTexts->all()),
-            ...Form::getRulesToDate($positionsDates->all()),
-            ...Form::getRulesToRadio($positionsRadios->all()),
-            ...Form::getRulesToCheck($positionCheck->all(), $this->form['elementos']),
-            ...Form::getRulesToGridMultiply($positionGridMultiply->all(), $this->form['elementos']),
-            ...Form::getRulesToGridVerify($positionGridVerify->all(), $this->form['elementos'])
-        );
-
-        return $array;
+        return Form::validations($this->form['elementos']);
     }
 
     /**
